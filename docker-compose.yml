@@ -1,0 +1,11 @@
+version: '2'
+
+services:
+  devel:
+    build: .
+    net: host
+    volumes:
+    - .:/src
+    - /mnt/data/ml/:/mnt/data/ml/
+    working_dir: /src/
+    command: /usr/bin/python3
