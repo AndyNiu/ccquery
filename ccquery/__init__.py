@@ -1,7 +1,7 @@
 import sys
 import logging
 
-from . import error, utils
+from . import error, utils, data
 
 def define_logger(mod_name):
     """Default logging configuration"""
