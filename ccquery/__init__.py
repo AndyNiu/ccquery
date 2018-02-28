@@ -1,6 +1,8 @@
 import sys
 import logging
 
+from . import error
+
 def define_logger(mod_name):
     """Default logging configuration"""
 
