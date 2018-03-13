@@ -1,0 +1,93 @@
+#!/usr/bin/python3
+
+import os
+import sys
+import yaml
+import logging
+import argparse
+
+lib_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+sys.path.append(lib_path)
+
+from ccquery.error import ConfigError, CaughtException
+from ccquery.utils import io_utils, cfg_utils
+from ccquery.preprocessing import QueryAnalysis
+
+
+#=============================================
+# Parse the command line arguments
+#=============================================
+
+options = {}
+parser = argparse.ArgumentParser(
+    description='Analyze the use of characters and words within queries')
+parser.add_argument('conf', help='input config file (yml)')
+options = parser.parse_args()
+
+#=============================================
+# Logger setup
+#=============================================
+
+logger = logging.getLogger('ccquery')
+
+#=============================================
+# Load and check configuration
+#=============================================
+
+conf = cfg_utils.load_configuration(options.conf)
+logger.info("Processing configuration: {}".format(conf))
+
+cfg_utils.match_keys(conf, ['res', 'input', 'output'])
+
+# conf['res']     resources locations (datasets)
+# conf['input']   relative path for input jsonl file
+# conf['kwargs']  keyword arguments for reading (eg: which field to analyze)
+# conf['output']  relative path for output stats folder
+
+input_file = os.path.join(conf['res'], conf['input'])
+output_folder = os.path.join(conf['res'], conf['output'])
+
+io_utils.check_file_readable(input_file)
+io_utils.create_folder(output_folder)
+
+# reading options
+kwargs = conf.get('kwargs', {})
+
+# clean options
+clean_cfg = conf.get('cleaner', {})
+char_cleaner = clean_cfg.get('char', None)
+word_cleaner = clean_cfg.get('word', None)
+
+# plot options
+plot_cfg = conf.get('plot', {})
+char_cfg = plot_cfg.get('char', {})
+word_cfg = plot_cfg.get('word', {})
+
+#=============================================
+# Convert data format
+#=============================================
+
+fn = io_utils.basename(input_file)
+
+wfile = os.path.join(output_folder, 'list_words_' + fn + '.json')
+cfile = os.path.join(output_folder, 'list_chars_' + fn + '.json')
+pwfile = os.path.join(output_folder, 'plot_query-length-words_' + fn + '.png')
+hwfile = os.path.join(output_folder, 'plot_word-occurrences_' + fn + '.png')
+pcfile = os.path.join(output_folder, 'plot_query-length-chars_' + fn + '.png')
+hcfile = os.path.join(output_folder, 'plot_char-occurrences_' + fn + '.png')
+
+logger.info('Analyze characters')
+da = QueryAnalysis(input_file, 'char', **kwargs, )
+da.analyze_text(char_cleaner)
+da.plot_query_length(pcfile)
+da.plot_minoccurrences(hcfile, **char_cfg)
+da.save_tokens(cfile)
+da.info_tokens()
+
+logger.info('Analyze words')
+da = QueryAnalysis(input_file, 'word', **kwargs, )
+da.analyze_text(word_cleaner)
+da.plot_query_length(pwfile)
+da.plot_minoccurrences(hwfile, **word_cfg)
+da.save_tokens(wfile)
+da.info_tokens()
