@@ -27,9 +27,16 @@ test-coverage:
 	coverage report --include='$(SRCDIR)/*' -m
 
 
+package:
+	$(PY) setup.py bdist_egg
+
+dist:
+	$(PY) setup.py sdist
+
 docs:
 	sphinx-apidoc -f -o $(DOCDIR) $(SRCDIR)
 	$(PY) setup.py build_sphinx --build-dir $(DOCDIR)
+
 
 build:
 	$(PY) setup.py build
