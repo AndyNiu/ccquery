@@ -27,9 +27,21 @@ test-coverage:
 	coverage report --include='$(SRCDIR)/*' -m
 
 
+package: package-egg package-wheel
+
+package-egg:
+	$(PY) setup.py bdist_egg
+
+package-wheel:
+	$(PY) setup.py bdist_wheel
+
+archive:
+	$(PY) setup.py sdist
+
 docs:
 	sphinx-apidoc -f -o $(DOCDIR) $(SRCDIR)
 	$(PY) setup.py build_sphinx --build-dir $(DOCDIR)
+
 
 build:
 	$(PY) setup.py build
@@ -45,18 +57,8 @@ local-install:
 clean:
 	py3clean .
 	$(PY) setup.py clean --all
-	find . -name '*.eggs' -type d -prune -exec rm -r {} \;
-	find . -name '*.egg' -type d -prune -exec rm -r {} \;
-	find . -name '*.egg-info' -type d -prune -exec rm -r {} \;
-	find . -name '__pycache__' -type d -prune -exec rm -r {} \;
-	find . -name '*.cache' -type d -prune -exec rm -r {} \;
-	find . -name '*.py[co]' -type f -exec rm {} \;
-	find . -name '*.log' -type f -exec rm {} \;
-	find . -name '*.egg' -type f -exec rm {} \;
-	find . -name '*.coverage' -type f -exec rm {} \;
-	find . -name '*.tar.xz' -type f -exec rm {} \;
-	rm -rf ./build \;
-	rm -rf ./dist \;
-	rm -rf ./eggs \;
-	rm -rf ./_rst \;
-	rm -rf $(DOCDIR) \;
+	rm -rf $(DOCDIR)
+	rm -rf ./build
+	rm -rf ./dist
+	rm -rf ./*.egg-info
+	rm -f ./.coverage
