@@ -1,0 +1,28 @@
+---
+url: https://dumps.wikimedia.org/frwiki/latest/frwiki-latest-pages-articles.xml.bz2
+output: /mnt/data/ml/qwant/datasets/wikipedia/fr-articles/
+args:
+  - --quiet
+  - --json
+  - --bytes 30G
+  - --processes 2
+  - --no-templates
+  - --filter_disambig_pages
+  - --min_text_length 50
+preprocessing:
+  ignore_digits: True
+  apostrophe: fr
+  ignore_punctuation: noise-a
+  tostrip: True
+  keepalnum: True
+word_filter:
+  topn: 500000
+plot_format: png
+word_plot:
+  mins: [1, 2, 3, 5, 10, 100]
+  left_lim: [0, 3000000]
+  right_lim: [95, 100.4]
+char_plot:
+  mins: [1, 2, 3, 5, 10, 100, 1000, 10000, 100000]
+  left_lim: [0, 750]
+  right_lim: [99.5, 100.04]
