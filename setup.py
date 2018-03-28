@@ -40,11 +40,14 @@ setup(
         'h5py==2.7.1',
         'gensim==3.3.0',
         'fastText==0.8.22',
+        'wikiextractor==2.69',
         'pyyaml==3.12',
     ],
     dependency_links=[
         ('git+https://github.com/facebookresearch/fastText.git'
-         '@596d04b82086ecc568d28c3e3c201325c9d9a7d7#egg=fastText-0.8.22')
+         '@596d04b82086ecc568d28c3e3c201325c9d9a7d7#egg=fastText-0.8.22'),
+        ('git+https://github.com/attardi/wikiextractor.git'
+         '@2a5e6aebc030c936c7afd0c349e6826c4d02b871#egg=wikiextractor-2.69'),
     ],
     extras_require={
         'devel': [
