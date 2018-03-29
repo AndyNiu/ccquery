@@ -1,10 +1,10 @@
-import json
 import logging
 from collections import defaultdict
 
+import ccquery.data
 from ccquery.error import ConfigError
 from ccquery.utils import io_utils, str_utils, plot_utils
-import ccquery.data
+from ccquery.preprocessing import Vocabulary
 
 def check_valid_token(token, tokens):
     """Check if the given token argument is valid"""
@@ -137,31 +137,17 @@ class QueryAnalysis:
             "Saved histogram on the query length under\n{}".format(output))
 
     def plot_minoccurrences(self, output, mins, left_lim=None, right_lim=None):
-        """Plot the occurrences histogram for characters"""
+        """Plot the occurrences histogram for characters / words"""
 
-        ntokens = sum(self.data.values())
-        plot_utils.occurrences_plot(
-            output,
-            list(self.data.values()),
-            mins,
-            left_lim=left_lim,
-            right_lim=right_lim,
-            title="'{}' dataset has {:,} unique {}s, {:,} in total".format(
-                self.field, len(self.data), self.token, ntokens),
-            xlabel="Minimum number of occurrences of {}s".format(self.token),
-            ylabel="Number of {}s".format(self.token))
-
-        self.logger.info(
-            "Saved histogram on char occurrences under\n{}".format(output))
+        voc = Vocabulary(counts=self.data, token=self.token)
+        voc.plot_minoccurrences(
+            output, mins, left_lim=left_lim, right_lim=right_lim)
 
     def save_tokens(self, output):
         """Save the counts on characters / words"""
 
-        io_utils.create_path(output)
-        with open(output, 'w', encoding='utf-8') as ostream:
-            json.dump(
-                self.data,
-                ostream, ensure_ascii=False, indent=4, sort_keys=True)
+        voc = Vocabulary(counts=self.data, token=self.token)
+        voc.save_tokens(output)
 
     def info_tokens(self):
         """Display the analysis on the use of characters / words"""

@@ -62,3 +62,24 @@ def match_keys(config, reference):
 
     if missing:
         raise ConfigError("Missing mandatory options {}".format(missing))
+
+def expand_to_string(config):
+    """Return a string expanding the configuration"""
+
+    if not isinstance(config, list):
+        return ''
+
+    sconf = ''
+    for item in config:
+        if isinstance(item, str):
+            sconf += item + ' '
+        elif isinstance(item, dict):
+            for key, value in item.items():
+                sconf += "{} {} ".format(key, value)
+        elif isinstance(item, list):
+            for key in item:
+                sconf += "{} {} ".format(key, value)
+        else:
+            pass
+
+    return sconf.strip()

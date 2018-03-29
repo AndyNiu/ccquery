@@ -1,7 +1,10 @@
 """Execute useful file and folder commands"""
 
 import os.path
-from ccquery.error import ConfigError
+import urllib
+import bz2
+
+from ccquery.error import ConfigError, DataError, CaughtException
 
 def check_file_readable(input_file):
     """Check file existance"""
@@ -57,3 +60,28 @@ def change_extension(input_file, ext):
     if input_file == '':
         return ''
     return os.path.splitext(input_file)[0] + '.' + ext
+
+def download(url, output):
+    """Download gzip archive file from url and store its contents to file"""
+
+    create_path(output)
+
+    try:
+        urllib.request.urlretrieve(url, output)
+    except urllib.error.HTTPError as exc:
+        raise CaughtException(
+            "Exception encountered when retrieving data from '{}': {}".format(
+                url, exc))
+
+def decompress(path, output, blocksize=900*1024):
+    """Download bz2 archive file from url and store its contents to file"""
+
+    if not path.endswith('.bz2'):
+        raise DataError("File '{}' is not a bz2 archive".format(path))
+
+    create_path(output)
+    with open(output, 'wb') as ostream:
+        with open(path, 'rb') as istream:
+            z = bz2.BZ2Decompressor()
+            for block in iter(lambda: istream.read(blocksize), b''):
+                ostream.write(z.decompress(block))

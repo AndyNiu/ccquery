@@ -4,16 +4,19 @@ import unicodedata
 import regex
 
 LOGGER = logging.getLogger(__name__)
-DIGITMAP = {ord(str(x)):' ' for x in range(10)}
 
 CHARSET = {
-    'digits':        regex.compile(r"\d"),
+    'digits':        regex.compile(r"(\d+[.,])*\d+"),
     'punctuation':   regex.compile(r"\p{posix_punct}"),
     'punctuation-a': regex.compile(r"(?V1)[\p{posix_punct}--']"),
     'punctuation-s': regex.compile(r"(?V1)[\p{posix_punct}--'\"\-_\.,]"),
     'noise':         regex.compile(r"[^\p{Latin}]"),
     'noise-a':       regex.compile(r"[^\p{Latin}']"),
     'noise-s':       regex.compile(r"[^\p{Latin}'\"_\.-]"),
+    'noise-d':       regex.compile(r"[^ \n\p{Latin}'\"_\.-]"),
+    'sentdelims':    regex.compile(r"\p{STerm}+"),
+    'whitespaces':   regex.compile(r"\p{Zs}+"),
+    'spaces':        regex.compile(r" +"),
 }
 
 def char_category(char):
@@ -96,7 +99,7 @@ def get_words(text, alphabet='LATIN', ignore='noise-a', lowercase=True):
     return words
 
 def clean_text(
-        text, alphabet='LATIN', lowercase=True,
+        text, alphabet='LATIN', lowercase=True, apostrophe='fr',
         ignore_digits=False, ignore_punctuation=None,
         tostrip=False, keepalnum=False):
     """
@@ -109,7 +112,15 @@ def clean_text(
 
     ctext = text
     if ignore_digits:
-        ctext = ctext.translate(DIGITMAP)
+        ctext = regex.sub(r"(\d+[.,/])*\d+", ' ', ctext)
+
+    ctext = regex.sub("'{3,}", ' ', ctext)
+
+    if apostrophe.lower() == 'fr':
+        ctext = regex.sub(r"('+)", "\\1 ", ctext)
+    else:
+        ctext = ctext.replace("n't", " n't ")
+        ctext = regex.sub(r"('+)", " \\1", ctext)
 
     if ignore_punctuation:
         ctext = regex.sub(CHARSET[ignore_punctuation], ' ', ctext)
@@ -128,3 +139,13 @@ def clean_text(
             else:
                 ntext += word + ' '
     return ntext.strip()
+
+def sentences(text):
+    """Extract sentences from given text"""
+
+    # replace new lines with dots
+    ctext = regex.sub(r"\s*\n+", '. ', text)
+
+    # one sentence per line
+    # use a "naive" sentence tokenizer: split by regex sentence terms
+    return [s.strip() for s in regex.split(r"\p{STerm}+", ctext) if s.strip()]
