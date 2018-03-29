@@ -10,3 +10,13 @@ services:
     - /mnt/data/ml/:/mnt/data/ml/
     working_dir: /src/
     command: /usr/bin/python3
+
+  srilm:
+    build:
+      context: .
+      dockerfile: Dockerfile.srilm
+    volumes:
+    - .:/src
+    - /mnt/data/ml/:/mnt/data/ml/
+    working_dir: /src/
+    command: ngram-count
