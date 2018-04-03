@@ -1,0 +1,106 @@
+#!/bin/bash
+
+if [ $# -ne 1 ] || [ "$1" == "-h" ] || [ "$1" == "--help" ]
+then
+  cat << EOM
+Objective: train a probabilistic n-gram language model
+
+Usage:   scripts/train_ngram_lm <yaml_config_file>
+Example: scripts/train_ngram_lm conf/model/config_train_lm_wiki-fr.yml
+
+Example of configuration
+---
+order: 3
+vocab: vocabulary.txt
+corpus: articles.txt
+smoothing: -kndiscount -interpolate
+pruning: none
+counts: ngram-counts.txt
+model: ngram-model.arpa
+EOM
+  exit 1
+fi
+
+configfn=$1
+
+#============================================================
+# Local functions
+#============================================================
+
+check_file() {
+  [ ! -e $1 ] && { echo "File $1 not found"; exit 1; }
+}
+
+load_value_from_yml() {
+  input=$1
+  var=$2
+  grep "^${var}:" $input | awk -F ": " '{print $2}'
+}
+
+time_execution() {
+  start=$SECONDS
+  $@
+  rcode=$?
+  now=$(date +"%T")
+  duration=$(( SECONDS - start ))
+  echo "Finished at $now, after $duration seconds"
+  return $rcode
+}
+
+#============================================================
+# Check if all necessary variables are present and valid
+#============================================================
+
+check_file $configfn
+
+vars=( order vocab corpus smoothing pruning model counts )
+for varname in "${vars[@]}"
+do
+  configvar="config_${varname}"
+  declare $configvar="$(load_value_from_yml $configfn $varname)"
+  [ ! $configvar ] && { echo "Variable $varname has empty value"; exit 1; }
+done
+
+files=( $config_vocab $config_corpus )
+for filename in "${files[@]}"; do check_file $filename; done
+
+#============================================================
+# Generate n-gram counts
+#============================================================
+
+if [ ! -e $config_counts ]
+then
+  mkdir -p $(dirname $config_counts)
+
+  args="-order $config_order \
+       -unk -vocab $config_vocab -text $config_corpus \
+       -sort -write $config_counts -debug 2 "
+
+  echo -e "\nLaunch n-gram counting\nngram-count" $args
+  time_execution ngram-count $args
+fi
+
+#============================================================
+# Construct large N-gram models
+#============================================================
+
+if [ -e $config_counts ]
+then
+  mkdir -p $(dirname $config_model)
+
+  cdir=`dirname $config_model`
+  auxdir="${cdir}/aux"
+
+  args="-order $config_order \
+        -unk -read $config_counts \
+        -name $auxdir -lm $config_model -debug 2 "
+
+  [ "$config_smoothing" != "none" ] && { args+="$config_smoothing "; }
+  [ "$config_pruning" != "none" ] && { args+="-prune $config_pruning "; }
+
+  echo -e "\nLaunch LM training\nmake-big-lm" $args
+  time_execution make-big-lm $args
+
+  fsize=`du -h "$config_model" | cut -f1`
+  echo "Generated a model of $fsize"
+fi

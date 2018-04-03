@@ -43,6 +43,23 @@ optional arguments:
     -h, --help  show this help message and exit
 ```
 
+### Train n-gram language models
+
+Use the [SRILM](http://www.speech.sri.com/projects/srilm/) toolkit to
+* generate n-gram counts based on a word vocabulary and a sentence-per-line corpus
+* estimate an open-class language model using the modified Knesser-Ney smoothing technnique
+
+The resulting language model will allow us to compute the log-probability of a sequence of words.
+
+```bash
+$ scripts/train_ngram_lm -h
+Objective: train a probabilistic n-gram language model
+
+Usage:   scripts/train_ngram_lm <yaml_config_file>
+Example: scripts/train_ngram_lm conf/model/config_train_lm_wiki-fr.yml
+```
+
+
 ## Docker execution
 
 ### Process wikipedia dumps 
@@ -87,6 +104,7 @@ char_plot:
 ```
 
 Output
+
 ```
 INFO [2018-03-28 08:54:06,878] [ccquery] Download wikipedia dump
 INFO [2018-03-28 08:54:06,878] [ccquery.preprocessing.wiki_extraction] Download wikipedia dump from
@@ -150,3 +168,67 @@ The plot on the word occurrences
 
 The plot on the character occurrences  
 ![Character occurrences](data/frwiki-latest-pages-articles_chars.png)
+
+### Train n-gram language models
+
+```bash
+$ docker-compose run --rm srilm \
+    scripts/train_ngram_lm \
+    conf/model/config_train_lm_wiki-fr.yml
+```
+
+Configuration
+
+```yaml
+---
+order: 3
+vocab: /mnt/data/ml/qwant/datasets/wikipedia/fr-articles/frwiki-latest-pages-articles_voc-topn=500000-words.txt
+corpus: /mnt/data/ml/qwant/datasets/wikipedia/fr-articles/frwiki-latest-pages-articles.txt
+smoothing: -gt1min 0 -kndiscount2 -gt2min 0 -interpolate2 -kndiscount3 -gt3min 0 -interpolate3
+pruning: 1e-9
+counts: /mnt/data/ml/qwant/models/ngrams/wikipedia/fr-articles/counts_order3_500kwords_frwiki-latest-pages-articles.txt
+model: /mnt/data/ml/qwant/models/ngrams/wikipedia/fr-articles/lm_order3_500kwords_modKN_prune1e-9_frwiki-latest-pages-articles.arpa
+```
+
+Output
+
+```bash
+Launch n-gram counting
+    ngram-count \
+        -order 3 \
+        -text frwiki-latest-pages-articles.txt \
+        -unk -vocab frwiki-latest-pages-articles_voc-topn=500000-words.txt \
+        -sort -write counts_order3_500kwords_frwiki-latest-pages-articles.txt \
+        -debug 2
+
+29,588,580 sentences, 587,893,490 words, 4,423,341 OOVs
+Finished at 13:05:38, after 300 seconds
+
+Launch LM training
+    make-big-lm \
+        -order 3 \
+        -unk -read counts_order3_500kwords_frwiki-latest-pages-articles.txt \
+        -name aux -lm lm_order3_500kwords_modKN_prune1e-9_frwiki-latest-pages-articles.arpa \
+        -gt1min 0 -kndiscount2 -gt2min 0 -interpolate2 -kndiscount3 -gt3min 0 -interpolate3 \
+        -prune 1e-9 \
+        -debug 2
+
+using ModKneserNey for 1-grams
+using ModKneserNey for 2-grams
+using ModKneserNey for 3-grams
+warning: distributing 0.000372689 left-over probability mass over all 500002 words
+
+discarded       1 2-gram contexts containing pseudo-events
+discarded  454422 3-gram contexts containing pseudo-events
+
+pruned    3254800 2-grams
+pruned   88871145 3-grams
+
+writing    500003 1-grams
+writing  34634795 2-grams
+writing  63960504 3-grams
+
+Finished at 13:34:32, after 1734 seconds
+
+Generated a model of 2.9G
+```
