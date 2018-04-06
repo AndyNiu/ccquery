@@ -33,6 +33,18 @@ def filename(input_file):
     """Recover file name with extension"""
     return os.path.basename(input_file)
 
+def filesize(input_file):
+    """Recover a human readable file size"""
+
+    check_file_readable(input_file)
+
+    file_size = os.path.getsize(input_file)
+    for count in ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB']:
+        if file_size > -1024.0 and file_size < 1024.0:
+            return "{:3.1f}{}".format(file_size, count)
+        file_size /= 1024.0
+    return "{:.1f}?".format(file_size)
+
 def dirname(input_file):
     """Recover file dirname"""
     return os.path.dirname(input_file)
