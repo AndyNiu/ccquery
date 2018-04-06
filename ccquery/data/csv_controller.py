@@ -63,7 +63,7 @@ def stream_field(path, field, header=None, names=None, sep=','):
     with open(path, 'r', encoding='utf-8') as istream:
         for entry in pd.read_csv(
                 istream,
-                usecols=['clean'],
+                usecols=[field],
                 header=header,
                 iterator=True,
                 chunksize=1,
@@ -149,14 +149,14 @@ def filter_data(data, filters=None, fields=None, langdetect=None, clean=None):
     LOGGER.info("Return {} entries after character cleanup".format(len(cdata)))
     return cdata
 
-def store_csv(data, output):
+def store_csv(data, output, quoting=1):
     """Store data to csv file"""
 
     LOGGER.info("Store data to '{}' csv file".format(output))
 
     io_utils.create_path(output)
     with open(output, 'w', encoding='utf-8') as ostream:
-        data.to_csv(ostream, index=0, header=1, quoting=1)
+        data.to_csv(ostream, index=0, header=1, quoting=quoting)
 
 def store_jsonlines(data, output):
     """Store data to json file"""
