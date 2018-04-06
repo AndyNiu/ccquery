@@ -15,7 +15,7 @@ disable=C0111,R0902,R0903,R0912,R0913,R0914,R0915,W1202
 [BASIC]
 
 good-names=_,a,b,c,d,e,f,g,i,j,k,l,m,n,p,t,x,y,z
-
+extension-pkg-whitelist=marisa_trie
 
 [REPORTS]
 

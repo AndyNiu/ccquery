@@ -41,6 +41,7 @@ setup(
         'gensim==3.3.0',
         'fastText==0.8.22',
         'wikiextractor==2.69',
+        'marisa-trie==0.7.5',
         'pyyaml==3.12',
     ],
     dependency_links=[
