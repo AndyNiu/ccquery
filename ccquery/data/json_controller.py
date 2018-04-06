@@ -59,7 +59,7 @@ def load_chunk(
         path, n, input_field='noisy', target_field='clean', to_shuffle=False):
     """Load 'n' entries from the file"""
 
-    input_seqs, output_seqs = load(path, [input_field, target_field])
+    input_seqs, output_seqs = load(path, input_field, target_field)
 
     LOGGER.info("Return only {} entries".format(n))
     if not to_shuffle:

@@ -2,6 +2,8 @@ FROM ubuntu:16.04
 MAINTAINER luiza.sarzyniec@qwant.com
 
 ENV \
+  LANG=C.UTF-8 \
+  TZ=Europe/Paris \
   SHOME=/usr/share/srilm \
   SARCHIVE=srilm-1.7.2.tar.gz
 
@@ -11,7 +13,8 @@ RUN apt-get update \
   && apt-get install -y build-essential \
   && apt-get install -y gcc gawk g++ make tcl time \
   && apt-get clean \
-  && rm -rf /var/lib/apt/lists/*
+  && rm -rf /var/lib/apt/lists/* \
+  && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 RUN mkdir $SHOME \
   && cp $SARCHIVE $SHOME/ \
