@@ -37,107 +37,82 @@ logger = logging.getLogger('ccquery')
 conf = cfg_utils.load_configuration(options.conf)
 logger.info("Processing configuration: {}".format(conf))
 
-cfg_utils.match_keys(conf, ['url', 'output'])
-
-# conf['url']     url for wikipedia .bz2 dump
-# conf['args']    arguments for the WikiExtractor script
-# conf['output']  absolute path for the output folder
-
-io_utils.create_folder(conf['output'])
-
-# Wikipedia extraction options
-# Possible usefull commands:
-# --quiet => do not show progress info
-# --json => write output in json format
-# --bytes 30G => maximum bytes per output file (default 1M)
-# --processes 2 => number of processes to use (default all CPUs)
-# --no-templates => do not expand templates
-# --filter_disambig_pages => ignore pages that contain disabmiguation markup
-# --min_text_length 50 => keep documents with minimum expanded text length
-args = conf.get('args', [])
-
-# options for sentence preprocessing
-preprocessing = conf.get(
-    'preprocessing',
-    {
-        'ignore_digits': True,
-        'apostrophe': 'fr',
-        'ignore_punctuation': 'noise-a',
-        'tostrip': True,
-        'keepalnum': True
-    })
-
-# options for word and char occurrences plot
-plot_format = conf.get('plot_format', 'png')
-word_plot_kwargs = conf.get('word_plot')
-char_plot_kwargs = conf.get('char_plot')
-
-# options for word occurrences filter
-word_filter = conf.get('word_filter', {'topn': 100000})
-filteropt = '='.join(str(x) for x in list(word_filter.items())[0])
+cfg_utils.match_keys(conf, ['res', 'actions'])
+io_utils.create_folder(conf['res'])
 
 #=============================================
 # Process Wikipedia dump
 #=============================================
 
-def add_extension(path, ext):
-    return "{}{}".format(path, ext)
-
-fn = os.path.join(conf['output'], io_utils.basename(conf['url']).split('.')[0])
-
-files = {
-    'url':   conf['url'],
-    'bz2':   add_extension(fn, '.bz2'),
-    'xml':   add_extension(fn, '.xml'),
-    'jsonl': add_extension(fn, '.jsonl'),
-    'txt':   add_extension(fn, '.txt'),
-    'wvoc':  add_extension(fn, "_voc-{}-words.json".format(filteropt)),
-    'cvoc':  add_extension(fn, '_voc-chars.json'),
-}
+def get_io(config, action, create_path=True):
+    if not ('input' in config[action] and 'output' in config[action]):
+        raise ConfigError(
+            "Missing i/o configuration for {} action".format(action))
+    file_in = os.path.join(config['res'], config[action]['input'])
+    file_out = os.path.join(config['res'], config[action]['output'])
+    if create_path:
+        io_utils.create_path(file_out)
+    return file_in, file_out
 
 wiki = WikiExtraction()
 
-logger.info('Download wikipedia dump')
-wiki.save_archive(files['url'], files['bz2'])
+for action in conf['actions']:
+    logger.info("Executing {} action".format(action))
 
-logger.info('Decompress data')
-wiki.save_xml(files['bz2'], files['xml'])
+    if not action in conf:
+        raise ConfigError("Missing configuration for {} action".format(action))
 
-logger.info('Extract plain text')
-wiki.save_content(files['xml'], files['jsonl'], args)
+    # input and output file paths for current action
+    file_in, file_out = get_io(conf, action)
 
-logger.info('Extract clean sentences')
-wiki.save_sentences(files['jsonl'], files['txt'], 'text', **preprocessing)
+    # skip previously completed actions
+    if os.path.exists(file_out):
+        continue
 
-# process words
-
-logger.info('Process words')
-wiki.load_words(files['txt'])
-
-if word_plot_kwargs:
-    logger.info('Plot word occurrences')
-    plot_file = add_extension(fn, "_words.{}".format(plot_format))
-    wiki.plot_word_occurrences(plot_file, **word_plot_kwargs)
-
-logger.info('Filter words with respect to number of occurrences')
-wiki.filter_words(**word_filter)
-
-logger.info('Save word vocabulary under json and txt format')
-wiki.save_words(files['wvoc'])
-wiki.save_words(io_utils.change_extension(files['wvoc'], 'txt'))
-
-# process characters
-
-logger.info('Process characters')
-wiki.load_chars(files['txt'])
-
-if char_plot_kwargs:
-    logger.info('Plot character occurrences')
-    plot_file = add_extension(fn, "_chars.{}".format(plot_format))
-    wiki.plot_char_occurrences(plot_file, **char_plot_kwargs)
-
-logger.info('Save character vocabulary under json and txt format')
-wiki.save_chars(files['cvoc'])
-wiki.save_chars(io_utils.change_extension(files['cvoc'], 'txt'))
+    if action == 'download':
+        url = conf[action]['input']
+        wiki.save_archive(url, file_out)
+    elif action == 'decompress':
+        wiki.save_xml(file_in, file_out)
+    elif action == 'extract':
+        args = conf[action].get('args', [])
+        # Wikipedia extraction options
+        # Possible usefull commands:
+        # --quiet => do not show progress info
+        # --json => write output in json format
+        # --bytes 30G => maximum bytes per output file (default 1M)
+        # --processes 2 => number of processes to use (default all CPUs)
+        # --no-templates => do not expand templates
+        # --filter_disambig_pages => ignore pages with disabmiguation markup
+        # --min_text_length 50 => keep documents with minimum text length
+        wiki.save_content(file_in, file_out, args)
+    elif action == 'preprocess':
+        kwargs = conf[action].get('kwargs', {
+            'ignore_digits': True,
+            'apostrophe': 'fr',
+            'ignore_punctuation': 'noise-a',
+            'tostrip': True,
+            'keepalnum': True})
+        wiki.save_sentences(file_in, file_out, 'text', **kwargs)
+    elif action == 'plot_word_occurrences':
+        kwargs = conf[action].get('kwargs')
+        wiki.load_words(file_in)
+        wiki.plot_word_occurrences(file_out, **kwargs)
+    elif action == 'define_word_vocabulary':
+        kwargs = conf[action].get('kwargs', {'topn': 100000})
+        wiki.load_words(file_in)
+        wiki.filter_words(**kwargs)
+        wiki.save_words(file_out)
+        wiki.save_words(io_utils.change_extension(file_out, 'txt'))
+    elif action == 'plot_char_occurrences':
+        kwargs = conf[action].get('kwargs')
+        wiki.load_chars(file_in)
+        wiki.plot_char_occurrences(file_out, **kwargs)
+    elif action == 'define_char_vocabulary':
+        wiki.load_chars(file_in)
+        if 'kwargs' in conf[action]:
+            wiki.filter_chars(**conf[action]['kwargs'])
+        wiki.save_chars(file_out)
+        wiki.save_chars(io_utils.change_extension(file_out, 'txt'))
 
 logger.info('Finished.')

@@ -1,5 +1,5 @@
 order: 3
-vocab: /mnt/data/ml/qwant/datasets/wikipedia/fr-articles/frwiki-latest-pages-articles_voc-topn=500000-words.txt
+vocab: /mnt/data/ml/qwant/datasets/wikipedia/fr-articles/frwiki-latest-pages-articles_voc-top500k-words.txt
 corpus: /mnt/data/ml/qwant/datasets/wikipedia/fr-articles/frwiki-latest-pages-articles.txt
 smoothing: -gt1min 0 -kndiscount2 -gt2min 0 -interpolate2 -kndiscount3 -gt3min 0 -interpolate3
 pruning: 1e-9
