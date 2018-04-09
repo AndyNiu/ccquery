@@ -32,9 +32,7 @@ class WikiExtraction:
     def save_archive(self, input_file, output_file):
         """Download archive and store it locally"""
 
-        self.logger.info(
-            "Download wikipedia dump from {} and store it to {}".format(
-                input_file, output_file))
+        self.logger.info('Download wikipedia dump')
 
         io_utils.create_path(output_file)
         io_utils.download(input_file, output_file)
@@ -42,9 +40,7 @@ class WikiExtraction:
     def save_xml(self, input_file, output_file):
         """Decompress the archive and store its content to file"""
 
-        self.logger.info(
-            "Decompress wikipedia dump from {} and store it to {}".format(
-                input_file, output_file))
+        self.logger.info('Decompress wikipedia dump')
 
         io_utils.create_path(output_file)
         io_utils.decompress(input_file, output_file)
@@ -69,9 +65,7 @@ class WikiExtraction:
     def save_sentences(self, input_file, output_file, field, **clean_kwargs):
         """Extract and preprocess sentences from Wikipedia jsonl file"""
 
-        self.logger.info(
-            "Extract clean sentences from {} and store them to {}".format(
-                input_file, output_file))
+        self.logger.info('Extract clean sentences')
 
         io_utils.create_path(output_file)
         with open(output_file, 'w', encoding='utf-8') as ostream:
@@ -83,7 +77,9 @@ class WikiExtraction:
 
     def load_words(self, input_file):
         """Load words from preprocessed sentences"""
-        self.words = Vocabulary(input_file, token='word')
+
+        if not self.words:
+            self.words = Vocabulary(input_file, token='word')
 
     def plot_word_occurrences(self, output_file, **kwargs):
         """Analyze the word occurrences"""
@@ -109,7 +105,9 @@ class WikiExtraction:
 
     def load_chars(self, input_file):
         """Load characters from preprocessed sentences"""
-        self.chars = Vocabulary(input_file, token='char')
+
+        if not self.chars:
+            self.chars = Vocabulary(input_file, token='char')
 
     def plot_char_occurrences(self, output_file, **kwargs):
         """Analyze the character occurrences"""
