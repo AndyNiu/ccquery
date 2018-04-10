@@ -1,0 +1,111 @@
+antoine meillet
+paul jules antoine meillet né le à moulins allier et mort le à châteaumeillant cher est le principal linguiste français des premières décennies du
+il est aussi un fin philologue auquel aucun détail n' échappe
+d' origine bourbonnaise fils d' un notaire de châteaumeillant cher il fait ses études secondaires au lycée théodore de banville de moulins
+étudiant à la faculté des lettres de paris à partir de où il suit notamment les cours de louis havet il assiste également à ceux de michel bréal au collège de france et de ferdinand de saussure à l' école pratique des hautes études
+il assure à la suite de saussure le cours de grammaire comparée qu' il complète à partir de par une conférence sur l' iranien
+en il soutient sa thèse pour le doctorat ès lettres recherches sur l' emploi du génitif accusatif en vieux slave
+en il occupe la chaire de grammaire comparée au collège de france où il consacre ses cours à l' histoire et à la structure des langues indo européennes
+il succéda au linguiste auguste carrière à la tête de la chaire d' arménien à l' école des langues orientales
+secrétaire de la société de linguistique de paris il est élu à l' académie des inscriptions et belles lettres en
+il a formé toute une génération de linguistes français parmi lesquels émile benveniste marcel cohen georges dumézil andré martinet aurélien sauvageot lucien tesnière joseph vendryes ainsi que le japonisant charles haguenauer
+antoine meillet devait diriger la thèse de jean paulhan sur la sémantique du proverbe et c' est lui qui découvrit gustave guillaume
+il a influencé aussi un certain nombre de linguistes étrangers
+il a également été le premier à identifier le phénomène de la grammaticalisation
+à la sorbonne meillet surveille le travail de milman parry
+en un an avant que parry ne commence son travail avec meillet celui ci écrit cité dans la première des deux thèses de milman parry à savoir celle qui traite de l' épithète homérique
+meillet offre à son étudiant l' opinion nouvelle à cette époque que la structure formulaïque de l' iliade serait une conséquence directe de sa transmission orale
+ainsi il le dirige vers l' étude de l' oralité dans son cadre natif et lui suggère d' observer les mécanismes d' une tradition orale vivante à côté du texte classique l' iliade qui est censé résulter d' une telle tradition
+en conséquence meillet présente parry à matija murko savant originaire de slovénie qui avait longuement écrit sur la tradition héroïque épique dans les balkans surtout en bosnie herzégovine
+par leurs recherches dont les résultats sont à présent hébergés par l' université de harvard parry et son élève albert lord ont profondément renouvelé les études homériques
+algèbre linéaire
+l algèbre linéaire est la branche des mathématiques qui s' intéresse aux espaces vectoriels et aux transformations linéaires formalisation générale des théories des systèmes d' équations linéaires
+l' histoire de l' algèbre linéaire commence avec al khawarizmi qui a traduit des textes de mathématiques indiens réinterprété les travaux de l' école grecque et qui est la source du développement conscient de l' algèbre qui s' étendra pendant des siècles après lui
+elle a été reprise par rené descartes qui pose des problèmes de géométrie comme la détermination de l' intersection de deux droites en termes d' équation linéaire établissant dès lors un pont entre deux branches mathématiques jusqu' alors séparées l' algèbre et la géométrie
+s' il ne définit pas la notion de base de l' algèbre linéaire qu' est celle d' espace vectoriel il l' utilise déjà avec succès et cette utilisation naturelle des aspects linéaires des équations manipulées demeurera utilisée de manière ad hoc fondée essentiellement sur les idées géométriques sous jacentes
+après cette découverte les progrès en algèbre linéaire vont se limiter à des études ponctuelles comme la définition et l' analyse des premières propriétés des déterminants par jean d' alembert
+ce n' est qu' au que l' algèbre linéaire devient une branche des mathématiques à part entière
+carl friedrich gauss trouve une méthode générique pour la résolution des systèmes d' équations linéaires et camille jordan résout définitivement le problème de la réduction d' endomorphisme
+en william rowan hamilton inventeur du terme vector découvre les quaternions extension de degré du corps des nombres réels
+en hermann grassmann publie son traité die lineale ausdehnungslehre la théorie de l' extension linéaire qui est la première tentative de formalisation générale de la notion d' espace vectoriel
+si son œuvre reste grandement inaperçue elle contient l' essentiel des idées modernes de l' algèbre linéaire et cette étape fondamentale dans le développement de l' algèbre linéaire est reconnue comme telle tant par hamilton que par giuseppe peano qui axiomatise entièrement la théorie en
+les espaces vectoriels deviennent alors une structure générale omniprésente dans presque tous les domaines mathématiques notamment en analyse espaces de fonctions
+sous leur forme la plus simple les applications linéaires dans les espaces vectoriels représentent intuitivement les déplacements dans les espaces géométriques élémentaires comme la droite le plan ou notre espace physique
+les bases de cette théorie remplacent maintenant la représentation construite par euclide au
+la construction moderne permet de généraliser la notion d' espace à des dimensions quelconques
+l' algèbre linéaire permet de résoudre tout un ensemble d' équations dites linéaires utilisées non seulement en mathématiques ou en mécanique mais aussi dans de nombreuses autres branches comme les sciences naturelles ou les sciences sociales
+les espaces vectoriels forment aussi un outil fondamental pour les sciences de l' ingénieur et servent de base à de nombreux domaines dans la recherche opérationnelle
+enfin c' est un outil utilisé en mathématiques dans des domaines aussi divers que la théorie des groupes des anneaux ou des corps l' analyse fonctionnelle la géométrie différentielle ou la théorie des nombres
+l' algèbre linéaire commence par l' étude de vecteurs dans les espaces cartésiens de dimension et
+un vecteur ici est une classe d' équivalence de bipoints qui unifie les segments de droite caractérisés à la fois par leur longueur ou norme leur direction et leur sens deux bipoints représentent un même vecteur si le quadrilatère formé sur les quatre points est un parallélogramme
+les vecteurs peuvent alors être utilisés pour représenter certaines entités physiques comme des déplacements additionnés entre eux ou encore multipliés par des scalaires nombres formant ainsi le premier exemple concret d' espace vectoriel
+l' algèbre linéaire moderne s' intéresse beaucoup aux espaces de dimension arbitraire éventuellement infinie
+la plupart des résultats obtenus en dimension ou peuvent être étendus aux dimensions finies supérieures
+les vecteurs étant des listes ordonnées à n composantes on peut manipuler ces données efficacement dans cet environnement
+par exemple en économie on peut créer et utiliser des vecteurs à huit dimensions pour représenter le produit national brut de huit pays
+d' autres théorèmes concernent les conditions d' inversion de matrices de divers types
+un théorème intéressant à l' époque des mémoires d' ordinateurs de petite taille était qu' on pouvait travailler séparément sur des sous ensembles blocs d' une matrice en les combinant ensuite par les mêmes règles qu' on utilise pour combiner des scalaires dans les matrices cf
+l article matrice par bloc
+avec les mémoires actuelles de plusieurs gigaoctets cette question a perdu un peu de son intérêt pratique mais reste très prisée en théorie des nombres pour la décomposition en produit de facteurs premiers avec le crible général de corps de nombres gnfs méthode lanczos par blocs
+les espaces vectoriels forment le support et le fondement de l' algèbre linéaire
+ils sont aussi présents dans de nombreux domaines distincts
+s' il n' est pas possible d' indiquer ici tous les cas d' utilisation on peut tout de même citer pour les principales structures objet de théories des exemples significatifs
+leurs rôles dans de vastes théories ne traitant pas d' une structure particulière comme celles des nombres algébriques ou de galois peuvent aussi être évoqués
+les espaces vectoriels utilisés sont d' une grande diversité
+on y trouve les classiques espaces vectoriels de dimension ou sur les nombres réels cependant la dimension peut être quelconque même infinie
+les nombres complexes sont aussi très utilisés ainsi que les rationnels
+il n' est pas rare qu' une partie des nombres réels ou complexes soit considéré comme un espace vectoriel rationnel
+le corps de base peut aussi contenir un nombre fini d' éléments définissant parfois un espace vectoriel fini
+les propriétés géométriques de la structure permettent la démonstration de nombreux théorèmes
+elles ne se limitent pas aux cas où l' espace est réel même dans le cas de corps plus insolites comme les corps finis ou les extensions finies des rationnels les propriétés géométriques s' avèrent parfois essentielles
+la classification des groupes finis est une vaste question encore objet de recherche
+si le groupe contient un petit nombre d' éléments les théorèmes de sylow peuvent suffire pour en déterminer la structure
+une méthode beaucoup plus puissante est nécessaire dans le cas général
+georg frobenius à la suite de travaux de richard dedekind développe une nouvelle théorie en
+elle se fonde sur l' idée que l' ensemble des symétries d' un espace vectoriel possède une structure de groupe
+il est toujours possible de représenter un groupe fini par des symétries bien choisies sur un espace vectoriel de dimension suffisante
+un groupe est ainsi incarné par des transformations géométriques simples
+une telle incarnation prend le nom de représentation d' un groupe
+les espaces vectoriels choisis sont de dimension finie en général sur le corps des complexes cependant pour disposer de bonnes propriétés arithmétiques le corps peut être celui des rationnels ou encore utiliser des entiers algébriques comme pour la démonstration du théorème de burnside sur les groupes résolubles
+richard brauer étudie un cas très abstrait celui des représentations sur un espace vectoriel construit à l' aide d' un corps fini
+un exemple relativement simple d' utilisation de cette théorie est donné par burnside avec son théorème sur les sous groupes d' exposant fini du groupe linéaire gl n
+un exemple célèbre d' anneau disposant aussi d' une structure d' espace vectoriel est celui des polynômes à coefficients dans un corps
+cet espace vectoriel de dimension infinie est largement utilisé en algèbre linéaire à travers par exemple le polynôme minimal ou caractéristique
+le morphisme canonique entre les polynômes et les applications linéaires d' un espace vectoriel est à l' origine d' une structure d' algèbre qui est un anneau si la multiplication externe est oubliée
+cette méthode permet d' élucider la structure de certains anneaux
+tout anneau est un espace vectoriel sur ceux de ses sous anneaux qui sont des corps
+l' espace vectoriel ressemble à la structure développée par grassman
+cette remarque est utilisée au début du en particulier par emil artin et emmy noether pour élucider cette structure dans le cas des anneaux artiniens et noethériens qui sont des copies de sous algèbres sur un espace vectoriel construit sur sous anneau qui s' avère être un corps
+un exemple est la généralisation d' un théorème de wedderburn par artin et portant maintenant le nom de théorème d' artin wedderburn
+il est important en algèbre non commutative
+un lemme élémentaire permet par ailleurs d' interpréter le corps des quaternions comme l' algèbre des endomorphismes d' une représentation réelle de degré du groupe associé
+la théorie de galois contient de nombreux exemples d' espaces vectoriels
+elle consiste à étudier un corps comme un espace vectoriel sur un sous corps
+ainsi chaque sous corps permet de considérer la structure initiale comme un espace vectoriel particulier
+un exemple d' application est celui des figures constructible à la règle et au compas
+ces points forment un corps disposant d' une structure d' espace vectoriel sur les nombres rationnels
+il est de dimension infinie et pour chaque point le plus petit sous corps le contenant est de dimension finie égale à une puissance de
+un tel sous corps est appelé une tour d' extensions quadratiques
+cette propriété de ces espaces vectoriels permet de résoudre d' antiques conjectures comme la duplication du cube la trisection de l' angle ou la construction d' un polygone régulier
+l' exemple historique de la théorie est celui de la résolution d' une équation polynomiale
+le théorème d' abel donne une condition nécessaire et suffisante de résolution par radicaux
+les espaces vectoriels utilisés ont pour éléments ceux du plus petit corps l contenant tous les coefficients du polynôme ainsi que ses racines et le corps sous jacent est un sous corps k du premier contenant tous les coefficients
+le groupe de galois est composé des automorphismes du corps l et laissant invariant le corps k
+il correspond à un nombre fini de symétries de l' espace vectoriel
+algèbre générale
+l' algèbre générale ou algèbre abstraite est la branche des mathématiques qui porte principalement sur l' étude des structures algébriques et de leurs relations
+l' appellation algèbre générale s' oppose à celle d ' algèbre élémentaire cette dernière enseigne le calcul algébrique c' est à dire les règles de manipulation des formules et des expressions algébriques
+historiquement les structures algébriques sont apparues dans différents domaines des mathématiques et n' y ont pas été étudiées séparément
+c' est pourquoi l' algèbre générale possède beaucoup de connexions avec toutes les branches des mathématiques
+l' étude des structures algébriques peut être faite de manière abstraite mais unifiée dans le cadre de l' algèbre universelle
+comme dans d' autres parties des mathématiques des problèmes et des exemples concrets ont joué un rôle important dans le développement de l' algèbre abstraite
+jusqu' à la fin du beaucoup ou plus de ces problèmes étaient en quelque sorte liés à la théorie des équations algébriques
+les principaux thèmes sont les suivants
+la fin du et le début du a connu un énorme changement dans la méthodologie des mathématiques
+l' algèbre abstraite a émergé autour du début du sous le nom de l ' algèbre moderne
+son étude faisait partie de l' entraînement pour plus de rigueur intellectuelle en mathématiques
+les définitions officielles de certaines structures algébriques ont émergé au
+en raison de sa généralité l' algèbre abstraite est utilisée dans de nombreux domaines des mathématiques et de la science
+par exemple la topologie algébrique utilise des objets algébriques pour son étude
+la théorie algébrique des nombres étudie divers anneaux numériques qui généralisent l' ensemble des entiers
+en utilisant la théorie des nombres algébriques andrew wiles a prouvé le dernier théorème de fermat
