@@ -68,7 +68,7 @@ class Vocabulary:
             self.tokens = new_tokens
         elif topn:
             new_tokens = sorted(
-                self.tokens.items(), key=lambda x: x[1], reverse=True)[:topn]
+                self.tokens.items(), key=lambda x: (-x[1], x[0]))[:topn]
             self.tokens = dict(new_tokens)
 
         self.occurrences = sum(self.tokens.values())
