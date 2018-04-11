@@ -62,7 +62,9 @@ then
 
   args="-order $config_order \
        -unk -lm $config_model \
-       -ppl $config_sentences -debug 1 "
+       -no-sos -no-eos \
+       -ppl $config_sentences \
+       -debug 1 "
 
   echo -e "\nLaunch n-gram scoring\nngram" $args
   ngram $args > $config_scores
