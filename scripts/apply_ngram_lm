@@ -1,0 +1,82 @@
+#!/bin/bash
+
+if [ $# -ne 1 ] || [ "$1" == "-h" ] || [ "$1" == "--help" ]
+then
+  cat << EOM
+Objective: apply a probabilistic n-gram language model
+
+Usage:   scripts/apply_ngram_lm <yaml_config_file>
+Example: scripts/apply_ngram_lm conf/model/config_apply_lm_wiki-fr.yml
+
+Example of configuration
+---
+order: 3
+model: ngram-model.arpa
+sentences: sentences.text
+scores: scores.txt
+EOM
+  exit 1
+fi
+
+configfn=$1
+
+#============================================================
+# Local functions
+#============================================================
+
+check_file() {
+  [ ! -e $1 ] && { echo "File $1 not found"; exit 1; }
+}
+
+load_value_from_yml() {
+  input=$1
+  var=$2
+  grep "^${var}:" $input | awk -F ": " '{print $2}'
+}
+
+#============================================================
+# Check if all necessary variables are present and valid
+#============================================================
+
+check_file $configfn
+
+vars=( order model sentences scores )
+for varname in "${vars[@]}"
+do
+  configvar="config_${varname}"
+  declare $configvar="$(load_value_from_yml $configfn $varname)"
+  [ ! $configvar ] && { echo "Variable $varname has empty value"; exit 1; }
+done
+
+files=( $config_model $config_sentences )
+for filename in "${files[@]}"; do check_file $filename; done
+
+#============================================================
+# Apply n-gram language model
+# to compute log probabilities of word sequences
+#============================================================
+
+if [ ! -e $config_scores ]
+then
+  mkdir -p $(dirname $config_scores)
+
+  args="-order $config_order \
+       -unk -lm $config_model \
+       -ppl $config_sentences -debug 1 "
+
+  echo -e "\nLaunch n-gram scoring\nngram" $args
+  ngram $args > $config_scores
+fi
+
+#============================================================
+# Recover scores from verbose output file
+#============================================================
+
+if [ -e $config_scores ]
+then
+  # recover the log-probability of each sentence
+  sed -i -rn 's/^.*logprob= (.*) ppl=.*$/\1/p' $config_scores
+
+  # delete final line (log-probability on entire file content)
+  sed -i '$d' $config_scores
+fi
