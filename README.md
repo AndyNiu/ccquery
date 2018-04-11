@@ -74,9 +74,26 @@ Configuration
 
 ```yaml
 ---
-url: https://dumps.wikimedia.org/frwiki/latest/frwiki-latest-pages-articles.xml.bz2
-output: /mnt/data/ml/qwant/datasets/wikipedia/fr-articles/
-args:
+res: /mnt/data/ml/qwant/datasets/wikipedia/fr-articles/
+actions:
+  - download
+  - decompress
+  - extract
+  - preprocess
+  - plot_word_occurrences
+  - define_word_vocabulary
+  - plot_char_occurrences
+  - define_char_vocabulary
+download:
+  input: https://dumps.wikimedia.org/frwiki/latest/frwiki-latest-pages-articles.xml.bz2
+  output: frwiki-latest-pages-articles.xml.bz2
+decompress:
+  input: frwiki-latest-pages-articles.xml.bz2
+  output: frwiki-latest-pages-articles.xml
+extract:
+  input: frwiki-latest-pages-articles.xml
+  output: frwiki-latest-pages-articles.jsonl
+  args:
     - --quiet
     - --json
     - --bytes 30G
@@ -84,40 +101,48 @@ args:
     - --no-templates
     - --filter_disambig_pages
     - --min_text_length 50
-preprocessing:
+preprocess:
+  input: frwiki-latest-pages-articles.jsonl
+  output: frwiki-latest-pages-articles.txt
+  kwargs:
     ignore_digits: True
     apostrophe: fr
     ignore_punctuation: noise-a
-    tostrip: True
+    tostrip: False
     keepalnum: True
-word_filter:
-    topn: 500000
-plot_format: png
-word_plot:
+plot_word_occurrences:
+  input: frwiki-latest-pages-articles.txt
+  output: plots/frwiki-latest-pages-articles_words.png
+  kwargs:
     mins: [1, 2, 3, 5, 10, 100]
     left_lim: [0, 3000000]
     right_lim: [95, 100.4]
-char_plot:
+define_word_vocabulary:
+  input: frwiki-latest-pages-articles.txt
+  output: frwiki-latest-pages-articles_voc-top500k-words.json
+  kwargs:
+    topn: 500000
+plot_char_occurrences:
+  input: frwiki-latest-pages-articles.txt
+  output: plots/frwiki-latest-pages-articles_chars.png
+  kwargs:
     mins: [1, 2, 3, 5, 10, 100, 1000, 10000, 100000]
     left_lim: [0, 750]
     right_lim: [99.5, 100.04]
+define_char_vocabulary:
+    input: frwiki-latest-pages-articles.txt
+    output: frwiki-latest-pages-articles_voc-chars.json
 ```
 
 Output
 
 ```
-INFO [2018-03-28 08:54:06,878] [ccquery] Download wikipedia dump
-INFO [2018-03-28 08:54:06,878] [ccquery.preprocessing.wiki_extraction] Download wikipedia dump from
-    https://dumps.wikimedia.org/frwiki/latest/frwiki-latest-pages-articles.xml.bz2
-    and store it to frwiki-latest-pages-articles.bz2
-
-INFO [2018-03-28 09:26:49,427] [ccquery] Decompress data
-INFO [2018-03-28 09:26:49,427] [ccquery.preprocessing.wiki_extraction] Decompress wikipedia dump from
-    frwiki-latest-pages-articles.bz2
-    and store it to frwiki-latest-pages-articles.xml
-
-INFO [2018-03-28 09:36:11,000] [ccquery] Extract plain text
-INFO [2018-03-28 09:36:11,032] [ccquery.preprocessing.wiki_extraction] Extract plain text from Wikipedia by executing the command:
+INFO [2018-04-10 11:50:58,460] [ccquery] Executing download action
+INFO [2018-04-10 11:50:58,461] [ccquery.preprocessing.wiki_extraction] Download wikipedia dump
+INFO [2018-04-10 12:22:37,021] [ccquery] Executing decompress action
+INFO [2018-04-10 12:22:37,022] [ccquery.preprocessing.wiki_extraction] Decompress wikipedia dump
+INFO [2018-04-10 12:33:29,653] [ccquery] Executing extract action
+INFO [2018-04-10 12:33:29,653] [ccquery.preprocessing.wiki_extraction] Extract plain text from Wikipedia by executing the command:
     WikiExtractor.py \
         frwiki-latest-pages-articles.xml \
         --quiet \
@@ -128,39 +153,24 @@ INFO [2018-03-28 09:36:11,032] [ccquery.preprocessing.wiki_extraction] Extract p
         --filter_disambig_pages \
         --min_text_length 50 \
         -o - > frwiki-latest-pages-articles.jsonl
-
-INFO [2018-03-28 10:47:31,153] [ccquery] Extract clean sentences
-INFO [2018-03-28 10:47:31,153] [ccquery.preprocessing.wiki_extraction] Extract clean sentences from
-    frwiki-latest-pages-articles.jsonl
-    and store them to frwiki-latest-pages-articles.txt
-
-INFO [2018-03-28 11:53:00,139] [ccquery] Process words
-INFO [2018-03-28 11:56:05,278] [ccquery.preprocessing.vocabulary] Read 2,496,898 words with 587,893,490 occurrences
-INFO [2018-03-28 11:56:05,279] [ccquery] Plot word occurrences
-INFO [2018-03-28 11:56:06,886] [ccquery.preprocessing.vocabulary] Saved histogram on word occurrences under
-    frwiki-latest-pages-articles_words.png
-INFO [2018-03-28 11:56:06,886] [ccquery] Filter words with respect to number of occurrences
-INFO [2018-03-28 11:56:08,198] [ccquery.preprocessing.vocabulary] Saved
-    500,000 words out of 2,496,898
-    (20.02% unique words, 99.25% coverage of word occurrences)
-INFO [2018-03-28 11:56:08,260] [ccquery] Save word vocabulary under json and txt format
-INFO [2018-03-28 11:56:09,639] [ccquery.preprocessing.vocabulary] Saved word counts under
-    frwiki-latest-pages-articles_voc-topn=500000-words.json
-INFO [2018-03-28 11:56:09,817] [ccquery.preprocessing.vocabulary] Saved word counts under
-    frwiki-latest-pages-articles_voc-topn=500000-words.txt
-
-INFO [2018-03-28 11:56:09,817] [ccquery] Process characters
-INFO [2018-03-28 12:04:21,046] [ccquery.preprocessing.vocabulary] Read 640 chars with 3,370,474,793 occurrences
-INFO [2018-03-28 12:04:21,046] [ccquery] Plot character occurrences
-INFO [2018-03-28 12:04:21,217] [ccquery.preprocessing.vocabulary] Saved histogram on char occurrences under
-    frwiki-latest-pages-articles_chars.png
-INFO [2018-03-28 12:04:21,217] [ccquery] Save character vocabulary under json and txt format
-INFO [2018-03-28 12:04:21,219] [ccquery.preprocessing.vocabulary] Saved char counts under
-    frwiki-latest-pages-articles_voc-chars.json
-INFO [2018-03-28 12:04:21,219] [ccquery.preprocessing.vocabulary] Saved char counts under
-    frwiki-latest-pages-articles_voc-chars.txt
-
-INFO [2018-03-28 12:04:21,219] [ccquery] Finished.
+INFO [2018-04-10 14:31:33,687] [ccquery] Executing preprocess action
+INFO [2018-04-10 14:31:33,687] [ccquery.preprocessing.wiki_extraction] Extract clean sentences
+INFO [2018-04-10 17:01:10,611] [ccquery] Executing plot_word_occurrences action
+INFO [2018-04-10 17:06:48,838] [ccquery.preprocessing.vocabulary] Read 2,522,623 words with 589,297,641 occurrences
+INFO [2018-04-10 17:06:48,838] [ccquery.preprocessing.vocabulary] Save histogram on word occurrences
+INFO [2018-04-10 17:06:51,791] [ccquery] Executing define_word_vocabulary action
+INFO [2018-04-10 17:06:54,006] [ccquery.preprocessing.vocabulary] Saved
+    500,000 words out of 2,522,623
+    (19.82% unique words, 99.24% coverage of word occurrences)
+INFO [2018-04-10 17:06:54,089] [ccquery.preprocessing.vocabulary] Save word counts in json file
+INFO [2018-04-10 17:06:56,272] [ccquery.preprocessing.vocabulary] Save words in text file
+INFO [2018-04-10 17:06:57,198] [ccquery] Executing plot_char_occurrences action
+INFO [2018-04-10 17:23:13,536] [ccquery.preprocessing.vocabulary] Read 641 chars with 3,400,942,936 occurrences
+INFO [2018-04-10 17:23:13,536] [ccquery.preprocessing.vocabulary] Save histogram on char occurrences
+INFO [2018-04-10 17:23:13,845] [ccquery] Executing define_char_vocabulary action
+INFO [2018-04-10 17:23:13,845] [ccquery.preprocessing.vocabulary] Save char counts in json file
+INFO [2018-04-10 17:23:13,847] [ccquery.preprocessing.vocabulary] Save chars in text file
+INFO [2018-04-10 17:23:13,848] [ccquery] Finished.
 ```
 
 The plot on the word occurrences  
@@ -182,7 +192,7 @@ Configuration
 ```yaml
 ---
 order: 3
-vocab: /mnt/data/ml/qwant/datasets/wikipedia/fr-articles/frwiki-latest-pages-articles_voc-topn=500000-words.txt
+vocab: /mnt/data/ml/qwant/datasets/wikipedia/fr-articles/frwiki-latest-pages-articles_voc-top500k-words.txt
 corpus: /mnt/data/ml/qwant/datasets/wikipedia/fr-articles/frwiki-latest-pages-articles.txt
 smoothing: -gt1min 0 -kndiscount2 -gt2min 0 -interpolate2 -kndiscount3 -gt3min 0 -interpolate3
 pruning: 1e-9
@@ -197,12 +207,12 @@ Launch n-gram counting
     ngram-count \
         -order 3 \
         -text frwiki-latest-pages-articles.txt \
-        -unk -vocab frwiki-latest-pages-articles_voc-topn=500000-words.txt \
+        -unk -vocab frwiki-latest-pages-articles_voc-top500k-words.txt \
         -sort -write counts_order3_500kwords_frwiki-latest-pages-articles.txt \
         -debug 2
 
-29,588,580 sentences, 587,893,490 words, 4,423,341 OOVs
-Finished at 13:05:38, after 300 seconds
+29,642,700 sentences, 589,297,641 words, 4,486,608 OOVs
+Finished at 09:44:22, after 486 seconds
 
 Launch LM training
     make-big-lm \
@@ -216,19 +226,19 @@ Launch LM training
 using ModKneserNey for 1-grams
 using ModKneserNey for 2-grams
 using ModKneserNey for 3-grams
-warning: distributing 0.000372689 left-over probability mass over all 500002 words
+warning: distributing 0.000334545 left-over probability mass over all 500002 words
 
 discarded       1 2-gram contexts containing pseudo-events
-discarded  454422 3-gram contexts containing pseudo-events
+discarded  453443 3-gram contexts containing pseudo-events
 
-pruned    3254800 2-grams
-pruned   88871145 3-grams
+pruned    3273196 2-grams
+pruned   90005564 3-grams
 
 writing    500003 1-grams
-writing  34634795 2-grams
-writing  63960504 3-grams
+writing  34918094 2-grams
+writing  64693601 3-grams
 
-Finished at 13:34:32, after 1734 seconds
+Finished at 10:31:58, after 2856 seconds
 
 Generated a model of 2.9G
 ```

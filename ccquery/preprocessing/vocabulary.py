@@ -68,7 +68,7 @@ class Vocabulary:
             self.tokens = new_tokens
         elif topn:
             new_tokens = sorted(
-                self.tokens.items(), key=lambda x: x[1], reverse=True)[:topn]
+                self.tokens.items(), key=lambda x: (-x[1], x[0]))[:topn]
             self.tokens = dict(new_tokens)
 
         self.occurrences = sum(self.tokens.values())
@@ -93,21 +93,24 @@ class Vocabulary:
 
         if output.endswith('.json'):
             # save words and frequencies under json file
+            self.logger.info("Save {} counts in json file".format(self.token))
             with open(output, 'w', encoding='utf-8') as ostream:
                 json.dump(
                     self.tokens,
                     ostream, ensure_ascii=False, indent=4, sort_keys=True)
         else:
-            # save the list of words unde text file
+            # save the list of words under text file
+            self.logger.info("Save {}s in text file".format(self.token))
             with open(output, 'w', encoding='utf-8') as ostream:
                 for token in sorted(self.tokens.keys()):
                     ostream.write(token + '\n')
 
-        self.logger.info("Saved {} counts under {}".format(self.token, output))
-
     def plot_minoccurrences(
             self, output, mins, left_lim=None, right_lim=None, **kwargs):
         """Plot the token occurrences histogram"""
+
+        self.logger.info(
+            "Save histogram on {} occurrences".format(self.token))
 
         plot_utils.occurrences_plot(
             output,
@@ -120,7 +123,3 @@ class Vocabulary:
                 len(self.tokens), self.token, self.occurrences),
             xlabel="Minimum number of occurrences of {}s".format(self.token),
             ylabel="Number of {}s".format(self.token))
-
-        self.logger.info(
-            "Saved histogram on {} occurrences under\n{}".format(
-                self.token, output))
