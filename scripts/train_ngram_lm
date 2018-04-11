@@ -17,6 +17,7 @@ smoothing: -kndiscount -interpolate
 pruning: none
 counts: ngram-counts.txt
 model: ngram-model.arpa
+cleanup: false
 EOM
   exit 1
 fi
@@ -53,7 +54,7 @@ time_execution() {
 
 check_file $configfn
 
-vars=( order vocab corpus smoothing pruning model counts )
+vars=( order vocab corpus smoothing pruning model counts cleanup )
 for varname in "${vars[@]}"
 do
   configvar="config_${varname}"
@@ -84,12 +85,12 @@ fi
 # Construct large N-gram models
 #============================================================
 
+cdir=`dirname $config_model`
+auxdir="${cdir}/aux"
+
 if [ -e $config_counts ]
 then
   mkdir -p $(dirname $config_model)
-
-  cdir=`dirname $config_model`
-  auxdir="${cdir}/aux"
 
   args="-order $config_order \
         -unk -read $config_counts \
@@ -103,4 +104,25 @@ then
 
   fsize=`du -h "$config_model" | cut -f1`
   echo "Generated a model of $fsize"
+fi
+
+#============================================================
+# Remove temporary files
+#============================================================
+
+if [ "$config_cleanup" == "true" ]
+then
+  echo "Removing temporary files"
+
+  [ -e $config_counts ] && rm $config_counts
+
+  for dir in `ls -d $auxdir.*`
+  do
+    [ -d $dir ] && rm -r $dir
+  done
+
+  for file in `ls $auxdir.*`
+  do
+    [ -e $file ] && rm $file
+  done
 fi
