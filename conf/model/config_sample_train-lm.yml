@@ -1,0 +1,9 @@
+---
+order: 3
+vocab: tests/wiki/sample-vocab.txt
+corpus: tests/wiki/sample-corpus.txt
+smoothing: -gt1min 0 -kndiscount2 -gt2min 0 -interpolate2 -kndiscount3 -gt3min 0 -interpolate3
+pruning: 1e-9
+counts: tests/ngram/tmp-counts.txt
+model: tests/ngram/sample-model.arpa
+cleanup: true

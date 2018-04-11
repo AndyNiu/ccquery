@@ -1,0 +1,5 @@
+---
+order: 3
+model: tests/ngram/sample-model.arpa
+sentences: tests/ngram/sample-sentences.txt
+scores: tests/ngram/sample-scores.txt
