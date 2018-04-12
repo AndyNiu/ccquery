@@ -59,10 +59,33 @@ Usage:   scripts/train_ngram_lm <yaml_config_file>
 Example: scripts/train_ngram_lm conf/model/config_train_lm_wiki-fr.yml
 ```
 
+### Build the trie-based version of the SRILM language model
+
+The code was inspired from the [PyNLPl](https://github.com/proycon/pynlpl) library.
+
+Did not use it directly because
+* of the long load time
+* of the large memory usage (class within a class)
+* it always expects an ARPA model (large file, slow parsing)
+* it doesn't allow saving the model in a binary file and reloading it from there
+* it doesn't handle correctly the start-of-sentence token (prob=-99)
+
+```bash
+$ scripts/change_lm_format -h
+usage: change_lm_format [-h] conf
+
+Change format of n-gram LM
+
+positional arguments:
+  conf        input config file (yml)
+
+optional arguments:
+  -h, --help  show this help message and exit
+```
 
 ## Docker execution
 
-### Process wikipedia dumps 
+### Execute: process wikipedia dumps
 
 ```bash
 $ docker-compose run --rm devel \
@@ -179,7 +202,7 @@ The plot on the word occurrences
 The plot on the character occurrences  
 ![Character occurrences](data/frwiki-latest-pages-articles_chars.png)
 
-### Train n-gram language models
+### Execute: train n-gram language models
 
 ```bash
 $ docker-compose run --rm srilm \
@@ -198,6 +221,7 @@ smoothing: -gt1min 0 -kndiscount2 -gt2min 0 -interpolate2 -kndiscount3 -gt3min 0
 pruning: 1e-9
 counts: /mnt/data/ml/qwant/models/ngrams/wikipedia/fr-articles/counts_order3_500kwords_frwiki-latest-pages-articles.txt
 model: /mnt/data/ml/qwant/models/ngrams/wikipedia/fr-articles/lm_order3_500kwords_modKN_prune1e-9_frwiki-latest-pages-articles.arpa
+cleanup: false
 ```
 
 Output
@@ -241,4 +265,32 @@ writing  64693601 3-grams
 Finished at 10:31:58, after 2856 seconds
 
 Generated a model of 2.9G
+```
+
+### Execute: build the trie-based version of the SRILM language model
+
+```bash
+$ docker-compose run --rm devel \
+    scripts/change_lm_format \
+    conf/model/config_train_lm_wiki-fr.yml
+```
+
+Configuration
+* use the same configuration file as the *train_ngram_lm* script
+* only uses the 'model' path configuration
+
+Output
+```bash
+INFO [2018-04-11 16:19:03,290] [ccquery] Load ARPA model
+INFO [2018-04-11 16:19:03,290] [ccquery.ngram.arpa_lm] Load ARPA model from
+    lm_order3_500kwords_modKN_prune1e-9_frwiki-latest-pages-articles.arpa
+INFO [2018-04-11 16:19:03,290] [ccquery.ngram.arpa_lm] Processing 1-grams
+INFO [2018-04-11 16:19:04,909] [ccquery.ngram.arpa_lm] Processing 2-grams
+INFO [2018-04-11 16:21:01,918] [ccquery.ngram.arpa_lm] Processing 3-grams
+INFO [2018-04-11 16:24:41,942] [ccquery.ngram.arpa_lm] Loaded a 3-gram LM with {1: 500003, 2: 34918094, 3: 64693601} counts
+INFO [2018-04-11 16:39:14,427] [ccquery.ngram.arpa_lm] Finished storing n-grams under trie structure
+INFO [2018-04-11 16:43:14,925] [ccquery] Build and save trie-based n-gram model
+INFO [2018-04-11 16:43:14,926] [ccquery.ngram.arpa_lm] Store trie-based n-grams under binary format in
+    lm_order3_500kwords_modKN_prune1e-9_frwiki-latest-pages-articles.bin
+INFO [2018-04-11 16:43:15,596] [ccquery] Generated a model of 867.9MB
 ```

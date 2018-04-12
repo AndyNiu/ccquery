@@ -24,3 +24,4 @@ le début du cube
 le début du développement
 le début du groupe
 le début du maintenant
+<s> le début du corps </s>
