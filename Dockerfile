@@ -10,7 +10,6 @@ ENV \
 RUN apt-get update \
   && apt-get install -y git libhunspell-dev \
   && apt-get install -y python3 python3-pip python3-tk \
-  && pip3 install --upgrade pip \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* \
   && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
