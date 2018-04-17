@@ -1,6 +1,6 @@
 """Execute useful file and folder commands"""
 
-import os.path
+import os
 import urllib
 import bz2
 
@@ -29,6 +29,11 @@ def create_path(output):
     if not os.path.isdir(os.path.dirname(output)):
         os.makedirs(os.path.dirname(output))
 
+def delete_file(input_file):
+    """Delete file"""
+    if os.path.exists(input_file):
+        os.remove(input_file)
+
 def filename(input_file):
     """Recover file name with extension"""
     return os.path.basename(input_file)
@@ -44,6 +49,17 @@ def filesize(input_file):
             return "{:3.1f}{}".format(file_size, count)
         file_size /= 1024.0
     return "{:.1f}?".format(file_size)
+
+def count_lines(input_file):
+    """Return the number of lines within a file"""
+
+    check_file_readable(input_file)
+
+    n = 0
+    with open(input_file, 'r') as istream:
+        for _ in istream:
+            n += 1
+    return n
 
 def dirname(input_file):
     """Recover file dirname"""
