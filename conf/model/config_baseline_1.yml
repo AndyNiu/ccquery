@@ -1,0 +1,23 @@
+---
+spacy:
+  model: fr_core_news_sm
+  disable:
+    - ner
+    - parser
+ngram:
+  model: /mnt/data/ml/qwant/models/ngrams/wikipedia/fr-articles/lm_order3_500kwords_modKN_prune1e-9_frwiki-latest-pages-articles.bin
+  kwargs:
+    order: 3
+    header: '@dd'
+hunspell:
+  dic: /mnt/data/ml/qwant/datasets/dictionaries/hunspell/FR/fr_plus_frwiki-latest-pages-articles_voc-top500k-words.dic
+  aff: /mnt/data/ml/qwant/datasets/dictionaries/hunspell/FR/fr.aff
+evaluate:
+  data:
+    file: /src/tests/spelling/sample-queries.jsonl
+    input: noisy
+    target: clean
+  top:
+    - 10
+    - 5
+    - 1

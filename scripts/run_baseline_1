@@ -1,0 +1,107 @@
+#!/usr/bin/python3
+
+import os
+import sys
+import yaml
+import logging
+import argparse
+
+lib_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+sys.path.append(lib_path)
+
+from ccquery.utils import io_utils, cfg_utils
+from ccquery.data import json_controller
+from ccquery.spelling import B1Correction, Evaluation
+
+
+#=============================================
+# Parse the command line arguments
+#=============================================
+
+options = {}
+parser = argparse.ArgumentParser(
+    description='Tokenize, detect, correct and rerank corrections')
+parser.add_argument('conf', help='input config file (yml)')
+options = parser.parse_args()
+
+#=============================================
+# Logger setup
+#=============================================
+
+logger = logging.getLogger('ccquery')
+
+#=============================================
+# Load and check configuration
+#=============================================
+
+conf = cfg_utils.load_configuration(options.conf)
+logger.info("Processing configuration: {}".format(conf))
+
+cfg_utils.match_keys(conf, ['spacy', 'hunspell', 'ngram', 'evaluate'])
+cfg_utils.match_keys(conf['spacy'], ['model'])
+cfg_utils.match_keys(conf['hunspell'], ['dic', 'aff'])
+cfg_utils.match_keys(conf['ngram'], ['model'])
+cfg_utils.match_keys(conf['evaluate'], ['data', 'top'])
+cfg_utils.match_keys(conf['evaluate']['data'], ['file', 'input', 'target'])
+
+spacy_cfg = conf['spacy']
+hunsp_cfg = conf['hunspell']
+ngram_cfg = conf['ngram']
+eval_cfg = conf['evaluate']
+
+io_utils.check_file_readable(eval_cfg['data']['file'])
+
+#=============================================
+# Correct queries
+#=============================================
+
+ctool = B1Correction()
+
+logger.info('Load intermediate tools')
+ctool.load_spacy(spacy_cfg['model'], spacy_cfg.get('disable'))
+ctool.load_hunspell(hunsp_cfg['dic'], hunsp_cfg['aff'], hunsp_cfg.get('extra'))
+ctool.load_ngram(ngram_cfg['model'], **ngram_cfg.get('kwargs'))
+
+# evaluate
+logger.info('Launch correction')
+
+max_len = 0
+
+for topn in eval_cfg['top']:
+    logger.info("Evaluating the top {} candidate corrections".format(topn))
+
+    query_streamer = json_controller.stream(
+        eval_cfg['data']['file'],
+        input_field=eval_cfg['data']['input'],
+        target_field=eval_cfg['data']['target'])
+
+    solutions = []
+    gold_solutions = []
+    for query, gold_solution in query_streamer:
+        candidates = ctool.correct(query, topn)
+        solutions.append(candidates)
+        gold_solutions.append(gold_solution)
+
+        if len(query) > max_len:
+            max_len = len(query)
+
+    evaluator = Evaluation()
+    evaluator.load_from_lists(solutions, gold_solutions)
+    recall_n, precision_n, f1_n = evaluator.performance(topn)
+
+    logger.info("Performance R@{0}={1}, P@{0}={2}, F1@{0}={3}".format(
+        topn, recall_n, precision_n, f1_n))
+
+# debug
+logger.info('Debugging...')
+
+query_streamer = json_controller.stream_field(
+    eval_cfg['data']['file'], eval_cfg['data']['input'])
+
+correction_log = ''
+for query in query_streamer:
+    candidates = ctool.correct(query, topn=1)
+    correction_log += "FROM\t{:>{}}\tTO\t{}\n".format(
+        query, max_len, candidates[0])
+
+logger.info("Display top-1 corrections\n{}".format(correction_log))
