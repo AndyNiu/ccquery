@@ -102,7 +102,4 @@ class Evaluation:
         precision_n = round(precision_n / n_queries * 100, 2)
         f1_n = round((2 * recall_n * precision_n) / (recall_n + precision_n), 2)
 
-        self.logger.info("R@N={}\nP@N={}\nF1@N={}".format(
-            recall_n, precision_n, f1_n))
-
         return recall_n, precision_n, f1_n
