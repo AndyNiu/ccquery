@@ -1,0 +1,54 @@
+#!/usr/bin/python3
+
+import os
+import sys
+import yaml
+import logging
+import argparse
+
+lib_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+sys.path.append(lib_path)
+
+from ccquery.error import ConfigError
+from ccquery.utils import cfg_utils
+from ccquery.preprocessing import VocMix
+
+#=============================================
+# Parse the command line arguments
+#=============================================
+
+options = {}
+parser = argparse.ArgumentParser(
+    description='Combine hunspell external dictionary with a personal one')
+parser.add_argument('conf', help='input config file (yml)')
+options = parser.parse_args()
+
+#=============================================
+# Logger setup
+#=============================================
+
+logger = logging.getLogger('ccquery')
+
+#=============================================
+# Load and check configuration
+#=============================================
+
+conf = cfg_utils.load_configuration(options.conf)
+logger.info("Processing configuration: {}".format(conf))
+
+cfg_utils.match_keys(
+    conf, ['external', 'personal', 'mix_approach', 'new_external'])
+
+if conf['mix_approach'] == 'intersection' and not 'new_personal' in conf:
+    raise ConfigError("Missing mandatory 'new_personal' config option")
+
+#=============================================
+# Combine dictionaries
+#=============================================
+
+mixer = VocMix(conf['external'], conf['personal'])
+mixer.combine_dictionaries(conf['mix_approach'])
+mixer.save_external_dictionary(conf['new_external'])
+
+if conf['mix_approach'] == 'intersection':
+    mixer.save_personal_dictionary(conf['new_personal'])
