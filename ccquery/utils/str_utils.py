@@ -149,3 +149,7 @@ def sentences(text):
     # one sentence per line
     # use a "naive" sentence tokenizer: split by regex sentence terms
     return [s.strip() for s in regex.split(r"\p{STerm}+", ctext) if s.strip()]
+
+def remove_spaces_apostrophes(text):
+    """Remove spaces following apostrophes"""
+    return regex.sub(r"' +", "'", text)

@@ -4,19 +4,6 @@ import unittest
 from ccquery.preprocessing import WikiExtraction
 from ccquery.utils import io_utils
 
-def count_lines(file):
-    """Return the number of lines within a file"""
-    n = 0
-    with open(file, 'r') as istream:
-        for line in istream:
-            n += 1
-    return n
-
-def delete_temp_file(file):
-    """Delete temporary files"""
-    if os.path.exists(file):
-        os.remove(file)
-
 class TestWikiProcessing(unittest.TestCase):
     """Test the wiki extraction methods"""
 
@@ -43,7 +30,7 @@ class TestWikiProcessing(unittest.TestCase):
     def tearDown(self):
         """Remove temporary files"""
         for file in self.files.values():
-            delete_temp_file(file)
+            io_utils.delete_file(file)
 
     def test_sequential_processing(self):
         """Test the all the intermediate wikidump processings"""
@@ -56,7 +43,7 @@ class TestWikiProcessing(unittest.TestCase):
         """Test the decompress feature"""
         self.extractor.save_xml(fin, fout)
         self.assertEqual(os.path.exists(fout), True)
-        self.assertEqual(count_lines(fout), 366)
+        self.assertEqual(io_utils.count_lines(fout), 366)
 
     def execute_extract(self, fin, fout):
         """Test the wiki extraction feature"""
@@ -71,7 +58,7 @@ class TestWikiProcessing(unittest.TestCase):
         ]
         self.extractor.save_content(fin, fout, args)
         self.assertEqual(os.path.exists(fout), True)
-        self.assertEqual(count_lines(fout), 3)
+        self.assertEqual(io_utils.count_lines(fout), 3)
 
     def execute_sentences(self, fin, fout):
         """Test the sentence division feature"""
@@ -84,7 +71,7 @@ class TestWikiProcessing(unittest.TestCase):
         }
         self.extractor.save_sentences(fin, fout, 'text', **kwargs)
         self.assertEqual(os.path.exists(fout), True)
-        self.assertEqual(count_lines(fout), 111)
+        self.assertEqual(io_utils.count_lines(fout), 111)
         self.assertTrue(
             filecmp.cmp(self.data, fout, shallow=False),
             'Generated corpus different from reference corpus')
@@ -96,7 +83,7 @@ class TestWikiProcessing(unittest.TestCase):
         self.extractor.filter_words(**kwargs)
         self.extractor.save_words(fout)
         self.assertEqual(os.path.exists(fout), True)
-        self.assertEqual(count_lines(fout), 500)
+        self.assertEqual(io_utils.count_lines(fout), 500)
         self.assertTrue(
             filecmp.cmp(self.vocab, fout, shallow=False),
             'Generated vocabulary different from reference vocabulary')

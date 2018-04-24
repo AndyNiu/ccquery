@@ -19,10 +19,8 @@ class LanguageModel:
         io_utils.check_file_readable(path)
 
         self.logger = logging.getLogger(__name__)
-        self.logger.info("Load model from {}".format(path))
 
         self.order = order
-
         self.model = RecordTrie(header)
         self.model.load(path)
 

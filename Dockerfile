@@ -4,13 +4,11 @@ MAINTAINER luiza.sarzyniec@qwant.com
 ENV \
   LANG=C.UTF-8 \
   TZ=Europe/Paris \
-  DISPLAY=:0 \
-  TF_CPP_MIN_LOG_LEVEL=2
+  DISPLAY=:0
 
 RUN apt-get update \
   && apt-get install -y git libhunspell-dev \
   && apt-get install -y python3 python3-pip python3-tk \
-  && pip3 install --upgrade pip \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* \
   && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
@@ -20,8 +18,7 @@ WORKDIR /src
 
 COPY setup.py requirements.txt /src/
 RUN pip3 install -r requirements.txt --process-dependency-links \
-  && python3 -m spacy download en_core_web_lg \
-  && python3 -m spacy download en_vectors_web_lg \
-  && python3 -m spacy download fr_core_news_md
+  && python3 -m spacy download en_core_web_sm \
+  && python3 -m spacy download fr_core_news_sm
 
 CMD python3

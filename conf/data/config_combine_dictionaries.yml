@@ -1,0 +1,5 @@
+---
+external: /mnt/data/ml/qwant/datasets/dictionaries/hunspell/FR/fr.dic
+personal: /mnt/data/ml/qwant/datasets/wikipedia/fr-articles/frwiki-latest-pages-articles_voc-top500k-words.json
+mix_approach: union
+new_external: /mnt/data/ml/qwant/datasets/dictionaries/hunspell/FR/fr_plus_frwiki-latest-pages-articles_voc-top500k-words.dic
