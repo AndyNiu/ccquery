@@ -119,8 +119,8 @@ def clean_text(
     if apostrophe.lower() == 'fr':
         ctext = regex.sub(r"('+)", "\\1 ", ctext)
     else:
-        ctext = ctext.replace("n't", " n't ")
         ctext = regex.sub(r"('+)", " \\1", ctext)
+        ctext = ctext.replace("n 't ", " n't ")
 
     if ignore_punctuation:
         ctext = regex.sub(CHARSET[ignore_punctuation], ' ', ctext)
