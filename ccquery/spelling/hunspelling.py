@@ -38,7 +38,7 @@ class HunSpelling:
         for word in words:
             self.add_word(word)
 
-    def add_dic(self, dic_file):
+    def add_extra_dictionary(self, dic_file):
         """Add an extra dictionary to the current instance"""
         io_utils.check_file_readable(dic_file)
         self.hunspell.add_dic(dic_file)
