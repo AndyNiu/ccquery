@@ -21,9 +21,14 @@ class TestTextController(unittest.TestCase):
     def test_load_chunk_text(self):
         """Load partial text data"""
 
+        # without shuffle
         cities = ['SACRAMENTO'] * 5
         data = text_controller.load_chunk(self.txt_file, 5)
         self.assertEqual(cities, data)
+
+        # with shuffle
+        data = text_controller.load_chunk(self.txt_file, 5, to_shuffle=True)
+        self.assertEqual(5, len(data))
 
     def test_stream_text(self):
         """Stream text data"""

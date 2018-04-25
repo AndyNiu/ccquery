@@ -15,11 +15,7 @@ def load(path):
         for line in istream:
             data.append(line.strip())
 
-    if data:
-        LOGGER.info("Loaded {} sentences".format(len(data)))
-    else:
-        LOGGER.warning('No data found')
-
+    LOGGER.info("Loaded {} sentences".format(len(data)))
     return data
 
 def load_chunk(path, n=100, to_shuffle=False):
