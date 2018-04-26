@@ -4,7 +4,8 @@ MAINTAINER luiza.sarzyniec@qwant.com
 ENV \
   LANG=C.UTF-8 \
   TZ=Europe/Paris \
-  DISPLAY=:0
+  MPLBACKEND=agg \
+  MODELS=/usr/share/ccquery/models/
 
 RUN apt-get update \
   && apt-get install -y git libhunspell-dev \
@@ -13,7 +14,9 @@ RUN apt-get update \
   && rm -rf /var/lib/apt/lists/* \
   && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-RUN mkdir /src
+RUN mkdir -p /src $MODELS/fastText
+ADD https://s3-us-west-1.amazonaws.com/fasttext-vectors/supervised_models/lid.176.bin $MODELS/fastText/
+
 WORKDIR /src
 
 COPY setup.py requirements.txt /src/
