@@ -72,10 +72,12 @@ class QueryAnalysis:
         self.nqueries = 0
 
         self.data = defaultdict(lambda: 0)
-        self.length = defaultdict(lambda: 0)
-        self.max_length = 0
+        self.vocabulary = None
 
-    def analyze_chars(self, cleaner=None):
+        self.max_length = 0
+        self.length = defaultdict(lambda: 0)
+
+    def _analyze_chars(self, cleaner=None):
         """Analyze character use in queries"""
 
         self.nqueries = 0
@@ -92,7 +94,7 @@ class QueryAnalysis:
 
         self.max_length = max(self.length.keys())
 
-    def analyze_words(self, cleaner=None):
+    def _analyze_words(self, cleaner=None):
         """Analyze word use in queries"""
 
         self.nqueries = 0
@@ -115,13 +117,16 @@ class QueryAnalysis:
         """Analyze character and word use in queries"""
 
         if self.token == 'char':
-            self.analyze_chars(cleaner)
+            self._analyze_chars(cleaner)
         else:
-            self.analyze_words(cleaner)
+            self._analyze_words(cleaner)
+
+        self.vocabulary = Vocabulary(counts=self.data, token=self.token)
 
     def plot_query_length(self, output):
         """Draw the bars for query's length in number of words/chars"""
 
+        self.logger.info('Save histogram on the query length')
         plot_utils.length_plot(
             output,
             self.length,
@@ -133,21 +138,17 @@ class QueryAnalysis:
         self.logger.info(
             "The queries have the following lengths in number of {}s:\n{}"\
             .format(self.token, display(list(self.length.items()))))
-        self.logger.info(
-            "Saved histogram on the query length under\n{}".format(output))
 
     def plot_minoccurrences(self, output, mins, left_lim=None, right_lim=None):
         """Plot the occurrences histogram for characters / words"""
 
-        voc = Vocabulary(counts=self.data, token=self.token)
-        voc.plot_minoccurrences(
+        self.vocabulary.plot_minoccurrences(
             output, mins, left_lim=left_lim, right_lim=right_lim)
 
     def save_tokens(self, output):
         """Save the counts on characters / words"""
 
-        voc = Vocabulary(counts=self.data, token=self.token)
-        voc.save_tokens(output)
+        self.vocabulary.save_tokens(output)
 
     def info_tokens(self):
         """Display the analysis on the use of characters / words"""
