@@ -188,12 +188,12 @@ define_char_vocabulary:
 Output
 
 ```
-INFO [2018-04-10 11:50:58,460] [ccquery] Executing download action
-INFO [2018-04-10 11:50:58,461] [ccquery.preprocessing.wiki_extraction] Download wikipedia dump
-INFO [2018-04-10 12:22:37,021] [ccquery] Executing decompress action
-INFO [2018-04-10 12:22:37,022] [ccquery.preprocessing.wiki_extraction] Decompress wikipedia dump
-INFO [2018-04-10 12:33:29,653] [ccquery] Executing extract action
-INFO [2018-04-10 12:33:29,653] [ccquery.preprocessing.wiki_extraction] Extract plain text from Wikipedia by executing the command:
+INFO [2018-04-27 11:01:12,483] [ccquery] Executing download action
+INFO [2018-04-27 11:01:12,483] [ccquery.preprocessing.wiki_extraction] Download wikipedia dump
+INFO [2018-04-27 11:34:33,892] [ccquery] Executing decompress action
+INFO [2018-04-27 11:34:33,892] [ccquery.preprocessing.wiki_extraction] Decompress wikipedia dump
+INFO [2018-04-27 11:45:22,892] [ccquery] Executing extract action
+INFO [2018-04-27 11:45:22,892] [ccquery.preprocessing.wiki_extraction] Extract plain text from Wikipedia by executing the command:
     WikiExtractor.py \
         frwiki-latest-pages-articles.xml \
         --quiet \
@@ -204,24 +204,24 @@ INFO [2018-04-10 12:33:29,653] [ccquery.preprocessing.wiki_extraction] Extract p
         --filter_disambig_pages \
         --min_text_length 50 \
         -o - > frwiki-latest-pages-articles.jsonl
-INFO [2018-04-10 14:31:33,687] [ccquery] Executing preprocess action
-INFO [2018-04-10 14:31:33,687] [ccquery.preprocessing.wiki_extraction] Extract clean sentences
-INFO [2018-04-10 17:01:10,611] [ccquery] Executing plot_word_occurrences action
-INFO [2018-04-10 17:06:48,838] [ccquery.preprocessing.vocabulary] Read 2,522,623 words with 589,297,641 occurrences
-INFO [2018-04-10 17:06:48,838] [ccquery.preprocessing.vocabulary] Save histogram on word occurrences
-INFO [2018-04-10 17:06:51,791] [ccquery] Executing define_word_vocabulary action
-INFO [2018-04-10 17:06:54,006] [ccquery.preprocessing.vocabulary] Saved
-    500,000 words out of 2,522,623
-    (19.82% unique words, 99.24% coverage of word occurrences)
-INFO [2018-04-10 17:06:54,089] [ccquery.preprocessing.vocabulary] Save word counts in json file
-INFO [2018-04-10 17:06:56,272] [ccquery.preprocessing.vocabulary] Save words in text file
-INFO [2018-04-10 17:06:57,198] [ccquery] Executing plot_char_occurrences action
-INFO [2018-04-10 17:23:13,536] [ccquery.preprocessing.vocabulary] Read 641 chars with 3,400,942,936 occurrences
-INFO [2018-04-10 17:23:13,536] [ccquery.preprocessing.vocabulary] Save histogram on char occurrences
-INFO [2018-04-10 17:23:13,845] [ccquery] Executing define_char_vocabulary action
-INFO [2018-04-10 17:23:13,845] [ccquery.preprocessing.vocabulary] Save char counts in json file
-INFO [2018-04-10 17:23:13,847] [ccquery.preprocessing.vocabulary] Save chars in text file
-INFO [2018-04-10 17:23:13,848] [ccquery] Finished.
+INFO [2018-04-27 13:42:51,790] [ccquery] Executing preprocess action
+INFO [2018-04-27 13:42:51,790] [ccquery.preprocessing.wiki_extraction] Extract clean sentences
+INFO [2018-04-27 16:16:28,731] [ccquery] Executing plot_word_occurrences action
+INFO [2018-04-27 16:22:20,749] [ccquery.preprocessing.vocabulary] Read 2,528,465 words with 591,560,481 occurrences
+INFO [2018-04-27 16:22:20,749] [ccquery.preprocessing.vocabulary] Save histogram on word occurrences
+INFO [2018-04-27 16:22:23,707] [ccquery] Executing define_word_vocabulary action
+INFO [2018-04-27 16:22:34,045] [ccquery.preprocessing.vocabulary] Saved
+    500,000 words out of 2,528,465
+    (19.77% unique words, 99.24% coverage of word occurrences)
+INFO [2018-04-27 16:22:34,133] [ccquery.preprocessing.vocabulary] Save word counts in json file
+INFO [2018-04-27 16:22:36,301] [ccquery.preprocessing.vocabulary] Save words in text file
+INFO [2018-04-27 16:22:37,226] [ccquery] Executing plot_char_occurrences action
+INFO [2018-04-27 16:39:45,466] [ccquery.preprocessing.vocabulary] Read 642 chars with 3,413,985,452 occurrences
+INFO [2018-04-27 16:39:45,466] [ccquery.preprocessing.vocabulary] Save histogram on char occurrences
+INFO [2018-04-27 16:39:45,783] [ccquery] Executing define_char_vocabulary action
+INFO [2018-04-27 16:39:45,783] [ccquery.preprocessing.vocabulary] Save char counts in json file
+INFO [2018-04-27 16:39:45,785] [ccquery.preprocessing.vocabulary] Save chars in text file
+INFO [2018-04-27 16:39:45,786] [ccquery] Finished.
 ```
 
 The plot on the word occurrences  
@@ -258,13 +258,14 @@ Output
 Launch n-gram counting
     ngram-count \
         -order 3 \
-        -text frwiki-latest-pages-articles.txt \
         -unk -vocab frwiki-latest-pages-articles_voc-top500k-words.txt \
+        -text frwiki-latest-pages-articles.txt \
         -sort -write counts_order3_500kwords_frwiki-latest-pages-articles.txt \
         -debug 2
 
-29,642,700 sentences, 589,297,641 words, 4,486,608 OOVs
-Finished at 09:44:22, after 486 seconds
+29,751,572 sentences, 591,560,481 words, 4,507,154 OOVs
+
+Finished at 08:56:52, after 515 seconds
 
 Launch LM training
     make-big-lm \
@@ -281,16 +282,16 @@ using ModKneserNey for 3-grams
 warning: distributing 0.000334545 left-over probability mass over all 500002 words
 
 discarded       1 2-gram contexts containing pseudo-events
-discarded  453443 3-gram contexts containing pseudo-events
+discarded  453588 3-gram contexts containing pseudo-events
 
-pruned    3273196 2-grams
-pruned   90005564 3-grams
+pruned    3298081 2-grams
+pruned   90388561 3-grams
 
 writing    500003 1-grams
-writing  34918094 2-grams
-writing  64693601 3-grams
+writing  34985400 2-grams
+writing  64759795 3-grams
 
-Finished at 10:31:58, after 2856 seconds
+Finished at 09:45:28, after 2916 seconds
 
 Generated a model of 2.9G
 ```
@@ -308,19 +309,19 @@ Configuration
 * only uses the 'model' path configuration
 
 Output
-```bash
-INFO [2018-04-11 16:19:03,290] [ccquery] Load ARPA model
-INFO [2018-04-11 16:19:03,290] [ccquery.ngram.arpa_lm] Load ARPA model from
+```
+INFO [2018-05-14 10:06:54,736] [ccquery] Load ARPA model
+INFO [2018-05-14 10:06:54,737] [ccquery.ngram.arpa_lm] Load ARPA model from
     lm_order3_500kwords_modKN_prune1e-9_frwiki-latest-pages-articles.arpa
-INFO [2018-04-11 16:19:03,290] [ccquery.ngram.arpa_lm] Processing 1-grams
-INFO [2018-04-11 16:19:04,909] [ccquery.ngram.arpa_lm] Processing 2-grams
-INFO [2018-04-11 16:21:01,918] [ccquery.ngram.arpa_lm] Processing 3-grams
-INFO [2018-04-11 16:24:41,942] [ccquery.ngram.arpa_lm] Loaded a 3-gram LM with {1: 500003, 2: 34918094, 3: 64693601} counts
-INFO [2018-04-11 16:39:14,427] [ccquery.ngram.arpa_lm] Finished storing n-grams under trie structure
-INFO [2018-04-11 16:43:14,925] [ccquery] Build and save trie-based n-gram model
-INFO [2018-04-11 16:43:14,926] [ccquery.ngram.arpa_lm] Store trie-based n-grams under binary format in
+INFO [2018-05-14 10:06:54,737] [ccquery.ngram.arpa_lm] Processing 1-grams
+INFO [2018-05-14 10:06:56,478] [ccquery.ngram.arpa_lm] Processing 2-grams
+INFO [2018-05-14 10:08:53,070] [ccquery.ngram.arpa_lm] Processing 3-grams
+INFO [2018-05-14 10:12:35,282] [ccquery.ngram.arpa_lm] Loaded a 3-gram LM with {1: 500003, 2: 34985400, 3: 64759795} counts
+INFO [2018-05-14 10:25:30,647] [ccquery.ngram.arpa_lm] Finished storing n-grams under trie structure
+INFO [2018-05-14 10:29:43,979] [ccquery] Build and save trie-based n-gram model
+INFO [2018-05-14 10:29:43,980] [ccquery.ngram.arpa_lm] Store trie-based n-grams under binary format in
     lm_order3_500kwords_modKN_prune1e-9_frwiki-latest-pages-articles.bin
-INFO [2018-04-11 16:43:15,596] [ccquery] Generated a model of 867.9MB
+INFO [2018-05-14 10:29:44,726] [ccquery] Generated a model of 873.1MB
 ```
 
 ### Execute: set up the process for the 1st baseline
@@ -367,20 +368,20 @@ Note:
   with the vocabulary associated to the n-gram language model
 
 Output
-```bash
-INFO [2018-04-23 16:00:17,399] [ccquery] Load intermediate tools
-INFO [2018-04-23 16:00:23,037] [ccquery.spelling.b1correction] Loaded spacy NLP model
-INFO [2018-04-23 16:00:23,175] [ccquery.spelling.b1correction] Loaded hunspell checker
-INFO [2018-04-23 16:00:23,375] [ccquery.spelling.b1correction] Loaded n-gram language model
-INFO [2018-04-23 16:00:23,375] [ccquery] Launch correction
-INFO [2018-04-23 16:00:23,375] [ccquery] Evaluating the top 10 candidate corrections
-INFO [2018-04-23 16:00:37,313] [ccquery] Performance R@10=88.33, P@10=81.63, F1@10=84.85
-INFO [2018-04-23 16:00:37,313] [ccquery] Evaluating the top 5 candidate corrections
-INFO [2018-04-23 16:00:51,177] [ccquery] Performance R@5=88.33, P@5=81.97, F1@5=85.03
-INFO [2018-04-23 16:00:51,177] [ccquery] Evaluating the top 1 candidate corrections
-INFO [2018-04-23 16:01:05,057] [ccquery] Performance R@1=86.0, P@1=86.0, F1@1=86.0
-INFO [2018-04-23 16:01:05,057] [ccquery] Debugging...
-INFO [2018-04-23 16:01:18,918] [ccquery] Display top-1 corrections
+```
+INFO [2018-05-14 10:47:46,732] [ccquery] Load intermediate tools
+INFO [2018-05-14 10:47:58,509] [ccquery.spelling.b1correction] Loaded spacy NLP model
+INFO [2018-05-14 10:47:59,096] [ccquery.spelling.b1correction] Loaded hunspell checker
+INFO [2018-05-14 10:47:59,634] [ccquery.spelling.b1correction] Loaded n-gram language model
+INFO [2018-05-14 10:47:59,634] [ccquery] Launch correction
+INFO [2018-05-14 10:47:59,634] [ccquery] Evaluating the top 10 candidate corrections
+INFO [2018-05-14 10:48:19,955] [ccquery] Performance R@10=88.67, P@10=81.93, F1@10=85.17
+INFO [2018-05-14 10:48:19,956] [ccquery] Evaluating the top 5 candidate corrections
+INFO [2018-05-14 10:48:40,253] [ccquery] Performance R@5=88.67, P@5=82.27, F1@5=85.35
+INFO [2018-05-14 10:48:40,254] [ccquery] Evaluating the top 1 candidate corrections
+INFO [2018-05-14 10:49:00,630] [ccquery] Performance R@1=86.33, P@1=86.33, F1@1=86.33
+INFO [2018-05-14 10:49:00,630] [ccquery] Debugging...
+INFO [2018-05-14 10:49:20,996] [ccquery] Display top-1 corrections
 FROM           comment rehoindre une force TO  comment rejoindre une force
 FROM            meilleur voeu en portugais TO  meilleur voeu en portugais
 FROM                    serrue en applique TO  serre en applique
