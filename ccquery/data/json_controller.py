@@ -3,6 +3,7 @@ import types
 import logging
 import numpy as np
 
+from ccquery.error import ConfigError
 from ccquery.utils import io_utils
 
 LOGGER = logging.getLogger(__name__)
@@ -19,11 +20,8 @@ def load_field(path, field):
             entry = json.loads(line)
             if field in entry:
                 data.append(entry[field])
-    if data:
-        LOGGER.info("Loaded {} entries".format(len(data)))
-    else:
-        LOGGER.warning("No entries found for field={}".format(field))
 
+    LOGGER.info("Loaded {} entries".format(len(data)))
     return data
 
 def load_fields(path, fields):
@@ -40,11 +38,8 @@ def load_fields(path, fields):
                 if field in entry:
                     data[field].append(entry[field])
     for field in fields:
-        if data[field]:
-            LOGGER.info("Loaded {} entries for field={}".format(
-                len(data), field))
-        else:
-            LOGGER.warning("No entries found for field={}".format(field))
+        LOGGER.info("Loaded {} entries for field={}".format(
+            len(data[field]), field))
 
     return data
 
@@ -65,7 +60,7 @@ def load_chunk(
     if not to_shuffle:
         return input_seqs[:n], output_seqs[:n]
 
-    index = np.random.choice(range(0, len(input_seqs), n, replace=False))
+    index = np.random.choice(range(0, len(input_seqs)), n, replace=False)
     return [input_seqs[i] for i in index], [output_seqs[i] for i in index]
 
 def stream_field(path, field):
@@ -105,10 +100,9 @@ def store_text(data, output):
 
     if not isinstance(data, list) \
             and not isinstance(data, types.GeneratorType):
-        LOGGER.warning(
-            "Method expects a list or a generator object instead of {}".format(
+        raise ConfigError(
+            "Method expects list / generator object instead of {}".format(
                 data.__class__))
-        return
 
     LOGGER.info("Store data to '{}' text file".format(output))
     io_utils.create_path(output)

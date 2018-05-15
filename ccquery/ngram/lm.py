@@ -13,7 +13,7 @@ class LanguageModel:
     - reorder a sequence of n-grams by their log-probabilities
     """
 
-    def __init__(self, path, header="@dd", order=3):
+    def __init__(self, path, header="@dd", order=3, unk='<unk>'):
         """Load language model from file"""
 
         io_utils.check_file_readable(path)
@@ -23,6 +23,7 @@ class LanguageModel:
         self.order = order
         self.model = RecordTrie(header)
         self.model.load(path)
+        self.unk = unk
 
     def _prob(self, ngram):
         """Return probability of given ngram tuple"""
@@ -45,10 +46,10 @@ class LanguageModel:
             return self._prob(word)
         except KeyError:
             try:
-                return self._prob('<unk>')
+                return self._prob(self.unk)
             except KeyError:
                 raise KeyError(
-                    "Word {} not found (model has no <unk>)".format(word))
+                    "Word {} not found (model has no UNK token)".format(word))
 
     def _score(self, word, history=None):
         """Get the n-gram's log probability"""

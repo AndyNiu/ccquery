@@ -3,8 +3,6 @@ version: '2'
 services:
   devel:
     build: .
-    environment:
-    - MPLBACKEND=agg
     volumes:
     - .:/src
     - /mnt/data/ml/:/mnt/data/ml/

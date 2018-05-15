@@ -19,10 +19,10 @@ def load_configuration(path):
             raise CaughtException(
                 "Exception encountered during YAML load: {}".format(exc))
 
-    if not isinstance(conf, dict):
-        raise ConfigError("Not a dict object stored in '{}'".format(path))
     if not conf:
         raise ConfigError("Empty configuration in '{}'".format(path))
+    if not isinstance(conf, dict):
+        raise ConfigError("Not a dict object stored in '{}'".format(path))
 
     return conf
 
@@ -34,7 +34,7 @@ def nested_keys_iter(d):
         else:
             yield key
 
-def check_presence(clist, rlist):
+def get_missing(rlist, clist):
     missing = []
     for key in rlist:
         if key not in clist:
@@ -46,7 +46,7 @@ def match_keys_structure(config, reference):
 
     cstruct = sorted(list(nested_keys_iter(config)))
     rstruct = sorted(list(nested_keys_iter(reference)))
-    missing = check_presence(cstruct, rstruct)
+    missing = get_missing(rstruct, cstruct)
 
     if missing:
         raise ConfigError(
@@ -58,7 +58,7 @@ def match_keys(config, reference):
     """Match first-level keys between two dictionaries"""
 
     ckeys = sorted(list(config.keys()))
-    missing = check_presence(ckeys, reference)
+    missing = get_missing(reference, ckeys)
 
     if missing:
         raise ConfigError("Missing mandatory options {}".format(missing))
@@ -78,8 +78,6 @@ def expand_to_string(config):
                 sconf += "{} {} ".format(key, value)
         elif isinstance(item, list):
             for key in item:
-                sconf += "{} {} ".format(key, value)
-        else:
-            pass
+                sconf += "{} ".format(key)
 
     return sconf.strip()

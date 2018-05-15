@@ -2,8 +2,8 @@ import logging
 import pandas as pd
 import fastText
 
-from ccquery.utils import io_utils, str_utils
-from ccquery.error import DataError, ConfigError
+from ccquery.utils import io_utils, cfg_utils, str_utils
+from ccquery.error import DataError
 
 LOGGER = logging.getLogger(__name__)
 
@@ -25,11 +25,7 @@ def load(path, header=None, names=None, sep=',', fields=None):
             sep=sep,
             encoding='utf-8')
 
-    if data.empty:
-        LOGGER.warning('No data found')
-    else:
-        LOGGER.info("Loaded {} entries".format(len(data)))
-
+    LOGGER.info("Loaded {} entries".format(len(data)))
     return data
 
 def load_chunk(path, nrows, header=None, names=None, sep=',', to_shuffle=False):
@@ -94,6 +90,8 @@ def filter_data(data, filters=None, fields=None, langdetect=None, clean=None):
 
     if langdetect:
         LOGGER.info("Apply language detection: {}".format(langdetect))
+        cfg_utils.match_keys(langdetect, ['field', 'model', 'language'])
+
         field = langdetect['field']
 
         if field not in cdata.columns:
@@ -119,8 +117,10 @@ def filter_data(data, filters=None, fields=None, langdetect=None, clean=None):
     if clean:
         LOGGER.info('Clean queries: remove unwanted characters')
 
-        if not fields:
-            raise ConfigError("Cleaning requires the 'fields' configuration")
+        cfg_utils.match_keys(fields, ['input', 'target'])
+        cfg_utils.match_keys(clean, ['input', 'target'])
+        cfg_utils.match_keys(clean['input'], ['method'])
+        cfg_utils.match_keys(clean['target'], ['method'])
 
         input_cleaner = getattr(str_utils, clean['input']['method'])
         input_kwargs = clean['input'].get('kwargs', {})
@@ -133,10 +133,8 @@ def filter_data(data, filters=None, fields=None, langdetect=None, clean=None):
             for ftype, column in fields.items():
                 if ftype == 'input':
                     clean_text = input_cleaner(row[column], **input_kwargs)
-                elif ftype == 'target':
-                    clean_text = target_cleaner(row[column], **target_kwargs)
                 else:
-                    raise ConfigError("Unknown given field {}".format(ftype))
+                    clean_text = target_cleaner(row[column], **target_kwargs)
 
                 if clean_text:
                     cdata.at[index, column] = clean_text

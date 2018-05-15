@@ -17,6 +17,11 @@ class TestJsonController(unittest.TestCase):
 
         io_utils.check_file_readable(self.jsonl_file)
 
+    def tearDown(self):
+        """Remove temporary files"""
+        if os.path.exists(self.copy_txt):
+            os.remove(self.copy_txt)
+
     def test_load_jsonl(self):
         """Load json-lines data"""
 
@@ -41,8 +46,17 @@ class TestJsonController(unittest.TestCase):
 
     def test_load_chunk(self):
         """Load partial data"""
+
+        # without shuffle
         input_data, target_data = json_controller.load_chunk(
             self.jsonl_file, 5, input_field='city', target_field='zip')
+        self.assertEqual(5, len(input_data))
+        self.assertEqual(5, len(target_data))
+
+        # with shuffle
+        input_data, target_data = json_controller.load_chunk(
+            self.jsonl_file, 5,
+            input_field='city', target_field='zip', to_shuffle=True)
         self.assertEqual(5, len(input_data))
         self.assertEqual(5, len(target_data))
 
@@ -81,14 +95,14 @@ class TestJsonController(unittest.TestCase):
     def test_store_txt(self):
         """Store content to text file"""
 
+        # test correct request
         data = json_controller.load_field(self.jsonl_file, 'city')
         json_controller.store_text(data, self.copy_txt)
-
         self.assertTrue(
             filecmp.cmp(self.copy_txt, self.txt_file, shallow=False),
             'Output file different from input file')
 
-    def tearDown(self):
-        """Remove temporary files"""
-        if os.path.exists(self.copy_txt):
-            os.remove(self.copy_txt)
+        # test incorrect request: no output
+        with self.assertRaises(Exception) as context:
+            json_controller.store_text('error', 'file.txt')
+        self.assertTrue('Method expects list' in str(context.exception))

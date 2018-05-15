@@ -371,3 +371,81 @@ class TestCleanup(unittest.TestCase):
             for text in self.examples]
 
         self.assertEqual(ref_examples, sentences)
+
+    def test_characters(self):
+        source1 = self.examples[0].split()
+        sample1 = [str_utils.get_characters(s) for s in source1]
+        reference1 = [
+            ['1', '2'],
+            ['3', '3', '4'],
+            ['4', '2', '3', '5', '2', '3'],
+            ['5', '4', '3', '5', '3', '4']
+        ]
+
+        source2 = self.examples[-1].split()
+        sample2 = [str_utils.get_characters(s) for s in source2]
+        reference2 = [[], ['ﬂ'], ['，'], ['�']]
+
+        self.assertEqual(reference1, sample1)
+        self.assertEqual(reference2, sample2)
+
+    def test_word(self):
+        source1 = self.examples[0].split()
+        sample1 = [str_utils.check_valid_word(s) for s in source1]
+        reference1 = [False, False, False, False]
+
+        source2 = self.examples[-1].split()
+        sample2 = [str_utils.check_valid_word(s) for s in source2]
+        reference2 = [False, True, False, False]
+
+        source3 = self.examples[2].split()
+        sample3 = [str_utils.check_valid_word(s) for s in source3]
+        reference3 = [True, True, True, True]
+
+        self.assertEqual(reference1, sample1)
+        self.assertEqual(reference2, sample2)
+        self.assertEqual(reference3, sample3)
+
+    def test_en_apostrophe(self):
+        kwargs = {
+            'alphabet': 'LATIN',
+            'lowercase': True,
+            'apostrophe': 'en',
+            'ignore_digits': False,
+            'ignore_punctuation': 'noise-a',
+            'tostrip': True,
+            'keepalnum': False,
+        }
+
+        source1 = "I don't wanna go"
+        sample1 = str_utils.clean_text(source1, **kwargs)
+        reference1 = "i do n't wanna go"
+
+        source2 = "Can't she just do it?"
+        sample2 = str_utils.clean_text(source2, **kwargs)
+        reference2 = "ca n't she just do it"
+
+        source3 = "She'd better leave fast!"
+        sample3 = str_utils.clean_text(source3, **kwargs)
+        reference3 = "she d better leave fast"
+
+        self.assertEqual(reference1, sample1)
+        self.assertEqual(reference2, sample2)
+        self.assertEqual(reference3, sample3)
+
+    def test_remove_apostrophes(self):
+        source1 = "de littérature et d' eau fraiche a blanchard"
+        sample1 = str_utils.remove_spaces_apostrophes(source1)
+        reference1 = "de littérature et d'eau fraiche a blanchard"
+
+        source2 = 'recette tarte pẑte brisée pur  eurre'
+        sample2 = str_utils.remove_spaces_apostrophes(source2)
+        reference2 = "recette tarte pẑte brisée pur  eurre"
+
+        source3 = "roue tvingo 14'' occasion"
+        sample3 = str_utils.remove_spaces_apostrophes(source3)
+        reference3 = "roue tvingo 14''occasion"
+
+        self.assertEqual(reference1, sample1)
+        self.assertEqual(reference2, sample2)
+        self.assertEqual(reference3, sample3)

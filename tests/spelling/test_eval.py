@@ -29,3 +29,13 @@ class TestEvalSpelling(unittest.TestCase):
 
         scores = evaluation.performance(1)
         self.assertEqual(scores, (100.00, 100.00, 100.00))
+
+    def test_empty_data(self):
+        """Test the performance on an empty data"""
+
+        evaluation = Evaluation()
+        evaluation.load_from_list([])
+
+        with self.assertRaises(Exception) as context:
+            evaluation.performance(1)
+        self.assertTrue('No corrections available' in str(context.exception))

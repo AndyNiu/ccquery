@@ -21,10 +21,14 @@ class TestWikiProcessing(unittest.TestCase):
 
         # temporary files
         self.files = {
+            'dld':   os.path.join(os.path.dirname(__file__), 'dld.xml'),
             'xml':   io_utils.change_extension(self.sample, 'xml'),
             'jsonl': io_utils.change_extension(self.sample, 'jsonl'),
             'txt':   io_utils.change_extension(self.sample, 'txt'),
-            'voc':   io_utils.change_extension(self.sample, 'voc.txt'),
+            'wvoc':  io_utils.change_extension(self.sample, 'wvoc.txt'),
+            'wplot': io_utils.change_extension(self.sample, 'wvoc.png'),
+            'cvoc':  io_utils.change_extension(self.sample, 'cvoc.txt'),
+            'cplot': io_utils.change_extension(self.sample, 'cvoc.png'),
         }
 
     def tearDown(self):
@@ -34,10 +38,23 @@ class TestWikiProcessing(unittest.TestCase):
 
     def test_sequential_processing(self):
         """Test the all the intermediate wikidump processings"""
+        self.execute_fake_download(self.files['dld'])
         self.execute_decompress(self.sample, self.files['xml'])
         self.execute_extract(self.files['xml'], self.files['jsonl'])
         self.execute_sentences(self.files['jsonl'], self.files['txt'])
-        self.execute_vocabulary(self.files['txt'], self.files['voc'])
+        self.execute_word_vocabulary(
+            self.files['txt'], self.files['wvoc'], self.files['wplot'])
+        self.execute_char_vocabulary(
+            self.files['txt'], self.files['cvoc'], self.files['cplot'])
+
+    def execute_fake_download(self, fout):
+        """Test the download feature"""
+
+        # not a wiki dump
+        url = 'https://dumps.wikimedia.org/enwiki/latest/'\
+              'enwiki-latest-abstract.xml.gz-rss.xml'
+
+        self.extractor.save_archive(url, fout)
 
     def execute_decompress(self, fin, fout):
         """Test the decompress feature"""
@@ -76,10 +93,14 @@ class TestWikiProcessing(unittest.TestCase):
             filecmp.cmp(self.data, fout, shallow=False),
             'Generated corpus different from reference corpus')
 
-    def execute_vocabulary(self, fin, fout):
+    def execute_word_vocabulary(self, fin, fout, pout):
         """Test the vocabulary definition feature"""
         kwargs = {'topn': 500}
         self.extractor.load_words(fin)
+
+        self.extractor.plot_word_occurrences(pout, mins=[1, 2, 3])
+        self.assertTrue(os.path.exists(pout))
+
         self.extractor.filter_words(**kwargs)
         self.extractor.save_words(fout)
         self.assertEqual(os.path.exists(fout), True)
@@ -87,3 +108,16 @@ class TestWikiProcessing(unittest.TestCase):
         self.assertTrue(
             filecmp.cmp(self.vocab, fout, shallow=False),
             'Generated vocabulary different from reference vocabulary')
+
+    def execute_char_vocabulary(self, fin, fout, pout):
+        """Test the vocabulary definition feature"""
+        kwargs = {'topn': 20}
+        self.extractor.load_chars(fin)
+
+        self.extractor.plot_char_occurrences(pout, mins=[1, 2, 3])
+        self.assertTrue(os.path.exists(pout))
+
+        self.extractor.filter_chars(**kwargs)
+        self.extractor.save_chars(fout)
+        self.assertEqual(os.path.exists(fout), True)
+        self.assertEqual(io_utils.count_lines(fout), 20)

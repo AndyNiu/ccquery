@@ -41,9 +41,6 @@ class ArpaLanguageModel:
                     elif line.startswith('\\') and line.endswith('-grams:'):
                         order = int(re.findall(r"\d+", line)[0])
                         self.logger.info("Processing {}-grams".format(order))
-                        if order >= 10:
-                            raise ValueError(
-                                "{}-grams not supported!".format(order))
                     elif order == 0 and line.startswith('ngram'):
                         n = int(line[6])
                         count = int(line[8:])

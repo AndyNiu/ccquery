@@ -37,7 +37,7 @@ conf = cfg_utils.load_configuration(options.conf)
 logger.info("Processing configuration: {}".format(conf))
 
 cfg_utils.match_keys(
-    conf, ['external', 'personal', 'mix_approach', 'new_external'])
+    conf, ['hunspell', 'personal', 'mix_approach', 'new_hunspell'])
 
 if conf['mix_approach'] == 'intersection' and not 'new_personal' in conf:
     raise ConfigError("Missing mandatory 'new_personal' config option")
@@ -46,9 +46,9 @@ if conf['mix_approach'] == 'intersection' and not 'new_personal' in conf:
 # Combine dictionaries
 #=============================================
 
-mixer = VocMix(conf['external'], conf['personal'])
+mixer = VocMix(conf['hunspell'], conf['personal'])
 mixer.combine_dictionaries(conf['mix_approach'])
-mixer.save_external_dictionary(conf['new_external'])
+mixer.save_combined_dictionary(conf['new_hunspell'])
 
 if conf['mix_approach'] == 'intersection':
     mixer.save_personal_dictionary(conf['new_personal'])

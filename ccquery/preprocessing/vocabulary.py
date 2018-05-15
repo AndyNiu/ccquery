@@ -39,14 +39,20 @@ class Vocabulary:
                         for char in line.strip():
                             self.occurrences += 1
                             self.tokens[char] += 1
+
+            self.logger.info("Read {:,} {}s with {:,} occurrences".format(
+                len(self.tokens), self.token, self.occurrences))
+
         elif counts and isinstance(counts, dict):
             self.tokens = counts.copy()
             self.occurrences = sum(counts.values())
+
+            self.logger.info("Loaded {:,} {}s with {:,} occurrences".format(
+                len(self.tokens), self.token, self.occurrences))
+
         else:
             raise ConfigError('Method expects a file path or a dictionary')
 
-        self.logger.info("Read {:,} {}s with {:,} occurrences".format(
-            len(self.tokens), self.token, self.occurrences))
 
     def filter_tokens(self, minocc=None, topn=None):
         """
@@ -59,9 +65,8 @@ class Vocabulary:
         ref_nocc = self.occurrences
 
         if not minocc and not topn:
-            self.logger.warning(
+            raise ConfigError(
                 "Method expects either a 'minocc' or a 'topn' argument")
-            return
 
         if minocc:
             new_tokens = {k: v for k, v in self.tokens.items() if v >= minocc}

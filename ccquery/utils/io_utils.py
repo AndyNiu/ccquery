@@ -3,6 +3,7 @@
 import os
 import urllib
 import bz2
+import shutil
 
 from ccquery.error import ConfigError, DataError, CaughtException
 
@@ -34,6 +35,11 @@ def delete_file(input_file):
     if os.path.exists(input_file):
         os.remove(input_file)
 
+def delete_folder(input_folder):
+    """Delete folder"""
+    if input_folder and os.path.isdir(input_folder):
+        shutil.rmtree(input_folder)
+
 def filename(input_file):
     """Recover file name with extension"""
     return os.path.basename(input_file)
@@ -44,11 +50,16 @@ def filesize(input_file):
     check_file_readable(input_file)
 
     file_size = os.path.getsize(input_file)
-    for count in ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB']:
+
+    metric = None
+    available_sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB']
+
+    for metric in available_sizes:
         if file_size > -1024.0 and file_size < 1024.0:
-            return "{:3.1f}{}".format(file_size, count)
+            break
         file_size /= 1024.0
-    return "{:.1f}?".format(file_size)
+
+    return "{:3.1f}{}".format(file_size, metric)
 
 def count_lines(input_file):
     """Return the number of lines within a file"""
@@ -96,7 +107,7 @@ def download(url, output):
 
     try:
         urllib.request.urlretrieve(url, output)
-    except urllib.error.HTTPError as exc:
+    except (urllib.error.HTTPError, urllib.error.URLError) as exc:
         raise CaughtException(
             "Exception encountered when retrieving data from '{}': {}".format(
                 url, exc))

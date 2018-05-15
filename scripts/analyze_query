@@ -2,14 +2,12 @@
 
 import os
 import sys
-import yaml
 import logging
 import argparse
 
 lib_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.append(lib_path)
 
-from ccquery.error import ConfigError, CaughtException
 from ccquery.utils import io_utils, cfg_utils
 from ccquery.preprocessing import QueryAnalysis
 
@@ -37,57 +35,42 @@ logger = logging.getLogger('ccquery')
 conf = cfg_utils.load_configuration(options.conf)
 logger.info("Processing configuration: {}".format(conf))
 
-cfg_utils.match_keys(conf, ['res', 'input', 'output'])
+# conf['res']              resources locations
+# conf['input']            relative path for input jsonl file
+# conf['field']            which data field to analyze
+# conf['analysis']['word'] configuration for word analysis
+# conf['analysis']['char'] configuration for char analysis
 
-# conf['res']     resources locations (datasets)
-# conf['input']   relative path for input jsonl file
-# conf['kwargs']  keyword arguments for reading (eg: which field to analyze)
-# conf['output']  relative path for output stats folder
+main_keys = ['cleaner', 'plot', 'output']
+output_keys = ['plot_length', 'plot_occ', 'counts']
 
-input_file = os.path.join(conf['res'], conf['input'])
-output_folder = os.path.join(conf['res'], conf['output'])
+cfg_utils.match_keys(conf, ['res', 'input', 'field', 'analysis'])
+for token in conf['analysis']:
+    cfg_utils.match_keys(conf['analysis'][token], main_keys)
+    cfg_utils.match_keys(conf['analysis'][token]['output'], output_keys)
 
-io_utils.check_file_readable(input_file)
-io_utils.create_folder(output_folder)
-
-# reading options
-kwargs = conf.get('kwargs', {})
-
-# clean options
-clean_cfg = conf.get('cleaner', {})
-char_cleaner = clean_cfg.get('char', None)
-word_cleaner = clean_cfg.get('word', None)
-
-# plot options
-plot_cfg = conf.get('plot', {})
-char_cfg = plot_cfg.get('char', {})
-word_cfg = plot_cfg.get('word', {})
+data_file = os.path.join(conf['res'], conf['input'])
+io_utils.check_file_readable(data_file)
 
 #=============================================
-# Convert data format
+# Analyse use of words and characters
 #=============================================
 
-fn = io_utils.basename(input_file)
+for token in conf['analysis']:
+    logger.info("Analyze {}s".format(token))
 
-wfile = os.path.join(output_folder, 'list_words_' + fn + '.json')
-cfile = os.path.join(output_folder, 'list_chars_' + fn + '.json')
-pwfile = os.path.join(output_folder, 'plot_query-length-words_' + fn + '.png')
-hwfile = os.path.join(output_folder, 'plot_word-occurrences_' + fn + '.png')
-pcfile = os.path.join(output_folder, 'plot_query-length-chars_' + fn + '.png')
-hcfile = os.path.join(output_folder, 'plot_char-occurrences_' + fn + '.png')
+    config = conf['analysis'][token]
 
-logger.info('Analyze characters')
-da = QueryAnalysis(input_file, 'char', **kwargs, )
-da.analyze_text(char_cleaner)
-da.plot_query_length(pcfile)
-da.plot_minoccurrences(hcfile, **char_cfg)
-da.save_tokens(cfile)
-da.info_tokens()
+    fcounts = os.path.join(conf['res'], config['output']['counts'])
+    flength = os.path.join(conf['res'], config['output']['plot_length'])
+    foccurrences = os.path.join(conf['res'], config['output']['plot_occ'])
+    io_utils.create_path(fcounts)
+    io_utils.create_path(flength)
+    io_utils.create_path(foccurrences)
 
-logger.info('Analyze words')
-da = QueryAnalysis(input_file, 'word', **kwargs, )
-da.analyze_text(word_cleaner)
-da.plot_query_length(pwfile)
-da.plot_minoccurrences(hwfile, **word_cfg)
-da.save_tokens(wfile)
-da.info_tokens()
+    da = QueryAnalysis(data_file, token, field=conf['field'])
+    da.analyze_text(config['cleaner'])
+    da.plot_query_length(flength)
+    da.plot_minoccurrences(foccurrences, **config['plot'])
+    da.save_tokens(fcounts)
+    da.info_tokens()
