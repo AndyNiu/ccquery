@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.2.0 - WIP
+
+
 ## 0.1.0 - 15/05/2018
 ### Added
 * process Wikipedia dumps in order to define
