@@ -1,0 +1,76 @@
+#!/usr/bin/python3
+
+import os
+import sys
+import logging
+import argparse
+
+lib_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+sys.path.append(lib_path)
+
+from ccquery.utils import io_utils, cfg_utils
+from ccquery.preprocessing import QueryAnalysis
+
+
+#=============================================
+# Parse the command line arguments
+#=============================================
+
+options = {}
+parser = argparse.ArgumentParser(
+    description='Analyze the use of characters and words within queries')
+parser.add_argument('conf', help='input config file (yml)')
+options = parser.parse_args()
+
+#=============================================
+# Logger setup
+#=============================================
+
+logger = logging.getLogger('ccquery')
+
+#=============================================
+# Load and check configuration
+#=============================================
+
+conf = cfg_utils.load_configuration(options.conf)
+logger.info("Processing configuration: {}".format(conf))
+
+# conf['res']              resources locations
+# conf['input']            relative path for input jsonl file
+# conf['field']            which data field to analyze
+# conf['analysis']['word'] configuration for word analysis
+# conf['analysis']['char'] configuration for char analysis
+
+main_keys = ['cleaner', 'plot', 'output']
+output_keys = ['plot_length', 'plot_occ', 'counts']
+
+cfg_utils.match_keys(conf, ['res', 'input', 'field', 'analysis'])
+for token in conf['analysis']:
+    cfg_utils.match_keys(conf['analysis'][token], main_keys)
+    cfg_utils.match_keys(conf['analysis'][token]['output'], output_keys)
+
+data_file = os.path.join(conf['res'], conf['input'])
+io_utils.check_file_readable(data_file)
+
+#=============================================
+# Analyse use of words and characters
+#=============================================
+
+for token in conf['analysis']:
+    logger.info("Analyze {}s".format(token))
+
+    config = conf['analysis'][token]
+
+    fcounts = os.path.join(conf['res'], config['output']['counts'])
+    flength = os.path.join(conf['res'], config['output']['plot_length'])
+    foccurrences = os.path.join(conf['res'], config['output']['plot_occ'])
+    io_utils.create_path(fcounts)
+    io_utils.create_path(flength)
+    io_utils.create_path(foccurrences)
+
+    da = QueryAnalysis(data_file, token, field=conf['field'])
+    da.analyze_text(config['cleaner'])
+    da.plot_query_length(flength)
+    da.plot_minoccurrences(foccurrences, **config['plot'])
+    da.save_tokens(fcounts)
+    da.info_tokens()

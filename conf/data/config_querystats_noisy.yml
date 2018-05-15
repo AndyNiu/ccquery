@@ -1,0 +1,24 @@
+res: /mnt/data/ml/qwant/datasets/queries/misspellings/
+input: corrections_2017-2018_fr-clean.jsonl
+field: noisy
+analysis:
+  word:
+    cleaner: get_words
+    plot:
+      mins: [1, 2, 3, 5, 10, 100]
+      left_lim: [0, 2200000]
+      right_lim: [70, 102]
+    output:
+      counts: describe_noisy_queries/words_corrections_2017-2018_fr-clean.json
+      plot_length: describe_noisy_queries/plot_query-length-words_corrections_2017-2018_fr-clean.png
+      plot_occ: describe_noisy_queries/plot_word-occurrences_corrections_2017-2018_fr-clean.png
+  char:
+    cleaner:
+    plot:
+      mins: [1, 2, 3, 5, 10, 100, 1000, 10000, 100000]
+      left_lim: [0, 250]
+      right_lim: [99, 100.1]
+    output:
+      counts: describe_noisy_queries/chars_corrections_2017-2018_fr-clean.json
+      plot_length: describe_noisy_queries/plot_query-length-chars_corrections_2017-2018_fr-clean.png
+      plot_occ: describe_noisy_queries/plot_chars-occurrences_corrections_2017-2018_fr-clean.png

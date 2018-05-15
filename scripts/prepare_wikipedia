@@ -1,0 +1,118 @@
+#!/usr/bin/python3
+
+import os
+import sys
+import yaml
+import logging
+import argparse
+
+lib_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+sys.path.append(lib_path)
+
+from ccquery.error import ConfigError, CaughtException
+from ccquery.utils import io_utils, cfg_utils
+from ccquery.preprocessing import WikiExtraction
+
+
+#=============================================
+# Parse the command line arguments
+#=============================================
+
+options = {}
+parser = argparse.ArgumentParser(
+    description='Download, decompress, extract and clean wikipedia dump data')
+parser.add_argument('conf', help='input config file (yml)')
+options = parser.parse_args()
+
+#=============================================
+# Logger setup
+#=============================================
+
+logger = logging.getLogger('ccquery')
+
+#=============================================
+# Load and check configuration
+#=============================================
+
+conf = cfg_utils.load_configuration(options.conf)
+logger.info("Processing configuration: {}".format(conf))
+
+cfg_utils.match_keys(conf, ['res', 'actions'])
+io_utils.create_folder(conf['res'])
+
+#=============================================
+# Process Wikipedia dump
+#=============================================
+
+def get_io(config, action, create_path=True):
+    if not ('input' in config[action] and 'output' in config[action]):
+        raise ConfigError(
+            "Missing i/o configuration for {} action".format(action))
+    file_in = os.path.join(config['res'], config[action]['input'])
+    file_out = os.path.join(config['res'], config[action]['output'])
+    if create_path:
+        io_utils.create_path(file_out)
+    return file_in, file_out
+
+wiki = WikiExtraction()
+
+for action in conf['actions']:
+    logger.info("Executing {} action".format(action))
+
+    if not action in conf:
+        raise ConfigError("Missing configuration for {} action".format(action))
+
+    # input and output file paths for current action
+    file_in, file_out = get_io(conf, action)
+
+    # skip previously completed actions
+    if os.path.exists(file_out):
+        continue
+
+    if action == 'download':
+        url = conf[action]['input']
+        wiki.save_archive(url, file_out)
+    elif action == 'decompress':
+        wiki.save_xml(file_in, file_out)
+    elif action == 'extract':
+        args = conf[action].get('args', [])
+        # Wikipedia extraction options
+        # Possible usefull commands:
+        # --quiet => do not show progress info
+        # --json => write output in json format
+        # --bytes 30G => maximum bytes per output file (default 1M)
+        # --processes 2 => number of processes to use (default all CPUs)
+        # --no-templates => do not expand templates
+        # --filter_disambig_pages => ignore pages with disabmiguation markup
+        # --min_text_length 50 => keep documents with minimum text length
+        wiki.save_content(file_in, file_out, args)
+    elif action == 'preprocess':
+        kwargs = conf[action].get('kwargs', {
+            'ignore_digits': True,
+            'apostrophe': 'fr',
+            'ignore_punctuation': 'noise-a',
+            'tostrip': True,
+            'keepalnum': True})
+        wiki.save_sentences(file_in, file_out, 'text', **kwargs)
+    elif action == 'plot_word_occurrences':
+        kwargs = conf[action].get('kwargs')
+        wiki.load_words(file_in)
+        wiki.plot_word_occurrences(file_out, **kwargs)
+    elif action == 'define_word_vocabulary':
+        kwargs = conf[action].get('kwargs', {'topn': 100000})
+        wiki.load_words(file_in)
+        wiki.filter_words(**kwargs)
+        wiki.save_words(file_out)
+        wiki.save_words(io_utils.change_extension(file_out, 'txt'))
+    elif action == 'plot_char_occurrences':
+        kwargs = conf[action].get('kwargs')
+        wiki.load_chars(file_in)
+        wiki.plot_char_occurrences(file_out, **kwargs)
+    elif action == 'define_char_vocabulary':
+        wiki.load_chars(file_in)
+        if 'kwargs' in conf[action]:
+            wiki.filter_chars(**conf[action]['kwargs'])
+        wiki.save_chars(file_out)
+        wiki.save_chars(io_utils.change_extension(file_out, 'txt'))
+
+logger.info('Finished.')

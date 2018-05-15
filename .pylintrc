@@ -1,0 +1,23 @@
+[MESSAGES CONTROL]
+
+# C0111 = missing docstring
+# R0902 = too many instance attributes
+# R0903 = too few public methods
+# R0912 = too many branches
+# R0913 = too many arguments
+# R0914 = too many locals
+# R0915 = too many statements
+# W1202 = use % formatting in logging functions
+
+disable=C0111,R0902,R0903,R0912,R0913,R0914,R0915,W1202
+
+
+[BASIC]
+
+good-names=_,a,b,c,d,e,f,g,i,j,k,l,m,n,p,t,x,y,z,ns,nc,nq
+extension-pkg-whitelist=marisa_trie,hunspell
+
+[REPORTS]
+
+msg-template={path}:{line}: [{msg_id}({symbol}), {obj}] {msg}
+reports=no

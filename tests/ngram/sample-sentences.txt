@@ -1,0 +1,27 @@
+du
+le
+début
+corps
+cube
+développement
+groupe
+maintenant
+le début
+début du
+du corps
+du cube
+du développement
+du groupe
+du maintenant
+le début du
+début du corps
+début du cube
+début du développement
+début du groupe
+début du maintenant
+le début du corps
+le début du cube
+le début du développement
+le début du groupe
+le début du maintenant
+<s> le début du corps </s>

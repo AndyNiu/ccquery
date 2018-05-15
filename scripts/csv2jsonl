@@ -1,0 +1,86 @@
+#!/usr/bin/python3
+
+import os
+import sys
+import logging
+import argparse
+import yaml
+
+lib_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+sys.path.append(lib_path)
+
+from ccquery.error import ConfigError, CaughtException
+from ccquery.utils import io_utils, cfg_utils
+from ccquery.data import csv_controller
+
+#=============================================
+# Parse the command line arguments
+#=============================================
+
+options = {}
+parser = argparse.ArgumentParser(
+    description='Convert csv data to json-lines format')
+parser.add_argument('conf', help='input config file (yml)')
+options = parser.parse_args()
+
+#=============================================
+# Logger setup
+#=============================================
+
+logger = logging.getLogger('ccquery')
+
+#=============================================
+# Load and check configuration
+#=============================================
+
+conf = cfg_utils.load_configuration(options.conf)
+cfg_utils.match_keys_structure(
+    conf, {'res': None, 'io': {'input': None, 'output':None}})
+
+# conf['res'] resources locations (datasets)
+# conf['io']  input & output options
+# - input: relative path for input csv file
+# - kwargs: csv loading configuration for pandas
+# - output: relative path for output json file
+
+input_file = os.path.join(conf['res'], conf['io']['input'])
+output_file = os.path.join(conf['res'], conf['io']['output'])
+
+io_utils.check_file_readable(input_file)
+io_utils.create_path(output_file)
+
+kwargs = conf['io'].get('kwargs', {})
+filters = conf.get('filter', {})
+
+if filters:
+    if 'fields' in filters:
+        cfg_utils.match_keys(filters['fields'], ['input', 'target'])
+
+    if 'langdetect' in filters:
+        cfg_utils.match_keys(
+            filters['langdetect'], ['field', 'language', 'model'])
+        filters['langdetect']['model'] = os.path.join(
+            conf['res'], filters['langdetect']['model'])
+
+    if 'clean' in filters:
+        cfg_utils.match_keys_structure(
+            filters['clean'],
+            {'input': {'method': None}, 'target': {'method': None}})
+
+logger.info("Processing configuration: {}".format(conf))
+
+#=============================================
+# Convert data format
+#=============================================
+
+logger.info("Load data from csv file with the format: {}".format(kwargs))
+data = csv_controller.load(input_file, **kwargs)
+
+if filters:
+    data = csv_controller.filter_data(data, **filters)
+
+csv_controller.store_jsonlines(data, output_file)
+
+newcsv = io_utils.change_extension(output_file, 'csv')
+if not os.path.exists(newcsv):
+    csv_controller.store_csv(data, newcsv)

@@ -1,0 +1,59 @@
+---
+res: /mnt/data/ml/qwant/datasets/wikipedia/fr-articles/
+actions:
+  - download
+  - decompress
+  - extract
+  - preprocess
+  - plot_word_occurrences
+  - define_word_vocabulary
+  - plot_char_occurrences
+  - define_char_vocabulary
+download:
+  input: https://dumps.wikimedia.org/frwiki/latest/frwiki-latest-pages-articles.xml.bz2
+  output: frwiki-latest-pages-articles.xml.bz2
+decompress:
+  input: frwiki-latest-pages-articles.xml.bz2
+  output: frwiki-latest-pages-articles.xml
+extract:
+  input: frwiki-latest-pages-articles.xml
+  output: frwiki-latest-pages-articles.jsonl
+  args:
+    - --quiet
+    - --json
+    - --bytes 30G
+    - --processes 2
+    - --no-templates
+    - --filter_disambig_pages
+    - --min_text_length 50
+preprocess:
+  input: frwiki-latest-pages-articles.jsonl
+  output: frwiki-latest-pages-articles.txt
+  kwargs:
+    ignore_digits: True
+    apostrophe: fr
+    ignore_punctuation: noise-a
+    tostrip: False
+    keepalnum: True
+plot_word_occurrences:
+  input: frwiki-latest-pages-articles.txt
+  output: plots/frwiki-latest-pages-articles_words.png
+  kwargs:
+    mins: [1, 2, 3, 5, 10, 100]
+    left_lim: [0, 3000000]
+    right_lim: [95, 100.4]
+define_word_vocabulary:
+  input: frwiki-latest-pages-articles.txt
+  output: frwiki-latest-pages-articles_voc-top500k-words.json
+  kwargs:
+    topn: 500000
+plot_char_occurrences:
+  input: frwiki-latest-pages-articles.txt
+  output: plots/frwiki-latest-pages-articles_chars.png
+  kwargs:
+    mins: [1, 2, 3, 5, 10, 100, 1000, 10000, 100000]
+    left_lim: [0, 750]
+    right_lim: [99.5, 100.04]
+define_char_vocabulary:
+    input: frwiki-latest-pages-articles.txt
+    output: frwiki-latest-pages-articles_voc-chars.json

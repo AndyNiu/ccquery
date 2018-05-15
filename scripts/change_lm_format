@@ -1,0 +1,53 @@
+#!/usr/bin/python3
+
+import os
+import sys
+import yaml
+import logging
+import argparse
+
+lib_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+sys.path.append(lib_path)
+
+from ccquery.utils import io_utils, cfg_utils
+from ccquery.ngram import ArpaLanguageModel
+
+
+#=============================================
+# Parse the command line arguments
+#=============================================
+
+options = {}
+parser = argparse.ArgumentParser(description='Change format of n-gram LM')
+parser.add_argument('conf', help='input config file (yml)')
+options = parser.parse_args()
+
+#=============================================
+# Logger setup
+#=============================================
+
+logger = logging.getLogger('ccquery')
+
+#=============================================
+# Load and check configuration
+#=============================================
+
+conf = cfg_utils.load_configuration(options.conf)
+logger.info("Processing configuration: {}".format(conf))
+
+cfg_utils.match_keys(conf, ['model'])
+input_file = conf['model']
+io_utils.check_file_readable(input_file)
+
+#=============================================
+# Change model format
+#=============================================
+
+logger.info('Load ARPA model')
+model = ArpaLanguageModel(input_file)
+
+logger.info('Build and save trie-based n-gram model')
+bin_file = io_utils.change_extension(input_file, 'bin')
+model.save_trie(bin_file)
+
+logger.info("Generated a model of {}".format(io_utils.filesize(bin_file)))
