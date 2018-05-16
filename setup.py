@@ -14,6 +14,7 @@ setup(
     keywords='misspelling detection, spelling correction, query completion',
     url='https://git.qwant.ninja/l.orosanu/ccquery',
     packages=find_packages(),
+    include_package_data=True,
     classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
