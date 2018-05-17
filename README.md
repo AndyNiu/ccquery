@@ -404,3 +404,44 @@ FROM                              amstrong TO  armstrong
 FROM              je msuis fait tout petit TO  je suis fait tout petit
 ...
 ```
+
+### Execute: run the Flask-based REST API service
+
+```bash
+$ docker-compose up api
+Starting ccquery_api_1 ... done
+Attaching to ccquery_api_1
+api_1    |  * Serving Flask app "baseline1" (lazy loading)
+api_1    |  * Environment: production
+api_1    |    WARNING: Do not use the development server in a production environment.
+api_1    |    Use a production WSGI server instead.
+api_1    |  * Debug mode: off
+api_1    |  * Running on http://0.0.0.0:5000/ (Press CTRL+C to quit)
+```
+
+Autocorrection example from the REST API
+```bash
+$ curl -v -XPOST http://0.0.0.0:5000?query=musique%20vietman
+
+* Rebuilt URL to: http://0.0.0.0:5000/?query=musique%20vietman
+* Hostname was NOT found in DNS cache
+*   Trying 0.0.0.0...
+* Connected to 0.0.0.0 (127.0.0.1) port 5000 (#0)
+> POST /?query=musique%20vietman HTTP/1.1
+> User-Agent: curl/7.38.0
+> Host: 0.0.0.0:5000
+> Accept: */*
+>
+* HTTP 1.0, assume close after body
+< HTTP/1.0 200 OK
+< Content-Type: application/json; charset=utf-8
+< Content-Length: 79
+< Server: Werkzeug/0.14.1 Python/3.5.2
+< Date: Fri, 18 May 2018 09:07:53 GMT
+<
+{"clean_query":"musique vietnam","clean_time":0.225,"query":"musique vietman"}
+```
+
+Autocorrection example from the web browser
+
+![Baseline-1 demonstration](data/api_b1.png)
