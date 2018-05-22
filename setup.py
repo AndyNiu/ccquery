@@ -3,7 +3,7 @@
 from setuptools import setup, find_packages
 
 PROJECT_NAME = 'ccquery'
-PROJECT_VERSION = '0.2.0.dev0'
+PROJECT_VERSION = '0.2.0'
 
 setup(
     name=PROJECT_NAME,
