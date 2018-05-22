@@ -1,7 +1,16 @@
 # Changelog
 
+## 0.2.0 - 22/05/2018
+### New features
+* add a Flask-based REST API service allowing to perform query correction
+    * demonstrate the first baseline solution (spacy + hunspell + n-gram LM)
+    * support both JSON and HTML outputs
+* add a script allowing to test the REST API
+    * recover correction and execution time for a list of queries
+    * store results in a .jsonl file
+
 ## 0.1.0 - 15/05/2018
-### Added
+### New features
 * process Wikipedia dumps in order to define
     * a word vocabulary
     * a textual corpus for training a n-gram language model

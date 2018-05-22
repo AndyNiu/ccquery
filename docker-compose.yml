@@ -9,6 +9,13 @@ services:
     working_dir: /src/
     command: /usr/bin/python3
 
+  api:
+    extends:
+      service: devel
+    command: python3 bin/baseline1.py baseline1.cfg
+    ports:
+    - 5000:5000
+
   srilm:
     build:
       context: .

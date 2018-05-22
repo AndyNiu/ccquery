@@ -3,7 +3,7 @@
 from setuptools import setup, find_packages
 
 PROJECT_NAME = 'ccquery'
-PROJECT_VERSION = '0.1.0'
+PROJECT_VERSION = '0.2.0'
 
 setup(
     name=PROJECT_NAME,
@@ -14,6 +14,7 @@ setup(
     keywords='misspelling detection, spelling correction, query completion',
     url='https://git.qwant.ninja/l.orosanu/ccquery',
     packages=find_packages(),
+    include_package_data=True,
     classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',

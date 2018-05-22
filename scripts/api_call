@@ -1,0 +1,64 @@
+#!/usr/bin/python3
+
+import os
+import json
+import requests
+import argparse
+
+#=============================================
+# Parse the command line arguments
+#=============================================
+
+options = {}
+parser = argparse.ArgumentParser(
+    description='Call query-correction API on sample queries and store results')
+parser.add_argument('url', help='URL for query-correction API')
+parser.add_argument('input', help='jsonl file with sample queries')
+parser.add_argument('output', help='jsonl file with cleaned queries')
+options = parser.parse_args()
+
+#==================================================
+# Process queries
+#==================================================
+
+def load_queries(filename, field='noisy'):
+    """Load possibly erroneous queries from jsonl file and requested field"""
+
+    if not os.path.exists(filename):
+        raise FileNotFoundError(filename)
+
+    queries = []
+    with open(filename, 'r', encoding='utf-8') as istream:
+        for line in istream:
+            data = json.loads(line)
+            queries.append(data[field])
+    return queries
+
+def clean_queries(queries, api_url):
+    """Call API to automatically correct queries"""
+
+    cqueries = []
+    for query in queries:
+        result = requests.get("{}?query={}".format(api_url, query)).text
+        cqueries.append(json.loads(result))
+    return cqueries
+
+def store_queries(queries, output):
+    """Store API results into a jsonl file"""
+
+    dirname = os.path.dirname(output)
+    if dirname and not os.path.isdir(dirname):
+        os.makedirs(dirname)
+
+    with open(output, 'w', encoding='utf-8') as ostream:
+        for query in queries:
+            ostream.write(json.dumps(query, ensure_ascii=False) + '\n')
+
+#==================================================
+# Call API and store results
+#==================================================
+
+if __name__ == '__main__':
+    queries = load_queries(options.input)
+    clean_queries = clean_queries(queries, options.url)
+    store_queries(clean_queries, options.output)

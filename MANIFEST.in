@@ -1,0 +1,24 @@
+include *.md
+include Makefile
+include MANIFEST.in
+include Dockerfile
+include Dockerfile.gpu
+include Dockerfile.srilm
+include docker-compose.yml
+include requirements.txt
+include .pylintrc
+include index.rst
+
+graft bin
+graft data
+graft tests
+graft scripts
+
+recursive-include {{PACKAGE}} *.py
+recursive-include bin/ *.html
+recursive-include bin/ *.cfg
+recursive-include conf/ *.yml
+
+global-exclude __pycache__
+global-exclude *.py[co]
+global-exclude .coverage

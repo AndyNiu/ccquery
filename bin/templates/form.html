@@ -1,0 +1,43 @@
+<html>
+
+  <head>
+    <title> Flask-based REST API for the ccquery project </title>
+  </head>
+
+  <body>
+  <h1>Query automatic correction</h1>
+
+    <form method='POST' action="/">
+      <table border=0>
+      <tr>
+        <td>
+          <textarea \
+            name="query"
+            rows="3"
+            cols="40"
+            placeholder="Enter query ..."
+            onfocus="javascript:value=''"
+            onkeypress="if(event.keyCode==13) {javascript:form.submit();}"
+            >{% if query %}{{ query }}{% endif %}</textarea>
+        </td>
+        <td>
+          <input type="submit" value="&rArr;" />
+        </td>
+        <td>
+          <textarea rows="3" cols="40">{% if clean_query %}{{ clean_query }}{% endif %}</textarea>
+        </td>
+      </tr>
+      <tr>
+        <td></td>
+        <td></td>
+        <td>
+          <p align="right" style="color:gray;font-size:80%;">
+            {% if clean_time %} {{ clean_time }}s {% endif %}
+          </p>
+        </td>
+      </tr>
+      </table>
+    </form>
+  </body>
+
+</html>
