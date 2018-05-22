@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.3.0 - WIP
+
+
 ## 0.2.0 - 22/05/2018
 ### New features
 * add a Flask-based REST API service allowing to perform query correction
