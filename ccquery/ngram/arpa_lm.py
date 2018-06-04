@@ -10,7 +10,7 @@ class ArpaLanguageModel:
 
     Focus:
     - load pre-computed back-off language model from file in ARPA format
-    - build a trie on the entries 'ngram: (logprob, backoff)' (use marisa_trie)
+    - build a trie on (ngram, (logprob, backoff)) entries (use marisa_trie)
     - store the trie model in binary file (usefull for faster reload)
 
     Note:
@@ -19,17 +19,28 @@ class ArpaLanguageModel:
     """
 
     def __init__(self, path):
-        """Load ARPA language model from file"""
+        """Build trie on ARPA n-grams"""
 
         io_utils.check_file_readable(path)
-
         self.logger = logging.getLogger(__name__)
         self.logger.info("Load ARPA model from {}".format(path))
+
+        self.order = None
+        self.total = {}
+        self.trie = RecordTrie("@dd", self.load_ngram_tuples(path))
+
+        self.logger.info(
+            "Loaded a {}-gram LM with {} counts".format(self.order, self.total))
+
+    def load_ngram_tuples(self, path):
+        """
+        Process ARPA language model.
+        Yield (ngram, (logprob, backoff)) entries.
+        """
 
         order = None
         self.total = {}
 
-        data = {}
         with open(path, 'rt', encoding='utf-8') as istream:
             for line in istream:
                 line = line.strip()
@@ -47,31 +58,23 @@ class ArpaLanguageModel:
                         self.total[n] = count
                     elif order > 0:
                         fields = line.split('\t')
-                        logprob = float(fields[0])
+
                         ngram = ' '.join(fields[1].split())
+                        logprob = float(fields[0])
+
+                        # handle absent/present backoff
+                        backoffprob = 0.0
                         if len(fields) > 2:
                             backoffprob = float(fields[2])
-                        else:
-                            backoffprob = 0.0
-                        data[ngram] = (logprob, backoffprob)
+
+                        # handle the prob(<s>) = -99 case
+                        if ngram == '<s>' and logprob == -99:
+                            logprob = 0.0
+
+                        yield (ngram, (logprob, backoffprob))
 
         self.order = order
 
-        self.logger.info(
-            "Loaded a {}-gram LM with {} counts".format(self.order, self.total))
-
-        # handle the prob(<s>) = -99 case
-        sos = "<s>"
-        if sos in data:
-            backoff = data[sos][1]
-            data[sos] = (0.0, backoff)
-
-        self.data = RecordTrie("@dd", list(data.items()))
-        self.logger.info("Finished storing n-grams under trie structure")
-
     def save_trie(self, output):
         """Store trie-based n-grams under binary format"""
-
-        self.logger.info(
-            "Store trie-based n-grams under binary format in {}".format(output))
-        self.data.save(output)
+        self.trie.save(output)
