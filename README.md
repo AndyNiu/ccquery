@@ -317,10 +317,7 @@ INFO [2018-05-14 10:06:54,737] [ccquery.ngram.arpa_lm] Processing 1-grams
 INFO [2018-05-14 10:06:56,478] [ccquery.ngram.arpa_lm] Processing 2-grams
 INFO [2018-05-14 10:08:53,070] [ccquery.ngram.arpa_lm] Processing 3-grams
 INFO [2018-05-14 10:12:35,282] [ccquery.ngram.arpa_lm] Loaded a 3-gram LM with {1: 500003, 2: 34985400, 3: 64759795} counts
-INFO [2018-05-14 10:25:30,647] [ccquery.ngram.arpa_lm] Finished storing n-grams under trie structure
-INFO [2018-05-14 10:29:43,979] [ccquery] Build and save trie-based n-gram model
-INFO [2018-05-14 10:29:43,980] [ccquery.ngram.arpa_lm] Store trie-based n-grams under binary format in
-    lm_order3_500kwords_modKN_prune1e-9_frwiki-latest-pages-articles.bin
+INFO [2018-05-14 10:29:43,979] [ccquery] Save trie-based n-gram model
 INFO [2018-05-14 10:29:44,726] [ccquery] Generated a model of 873.1MB
 ```
 

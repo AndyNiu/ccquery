@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.3.0 - 04/06/2018
+### Improvements
+* new method to build the trie-based n-gram language model
+    * do not load data into memory
+    * iterate through the (ngram, (logprob, backoff)) entries of ARPA file
+    * build trie while iterating the data
+
 ## 0.2.0 - 22/05/2018
 ### New features
 * add a Flask-based REST API service allowing to perform query correction

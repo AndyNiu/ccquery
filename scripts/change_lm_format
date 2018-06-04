@@ -46,7 +46,7 @@ io_utils.check_file_readable(input_file)
 logger.info('Load ARPA model')
 model = ArpaLanguageModel(input_file)
 
-logger.info('Build and save trie-based n-gram model')
+logger.info('Save trie-based n-gram model')
 bin_file = io_utils.change_extension(input_file, 'bin')
 model.save_trie(bin_file)
 
