@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.3.0 - WIP
+## 0.3.0 - 04/06/2018
 ### Improvements
 * new method to build the trie-based n-gram language model
     * do not load data into memory
